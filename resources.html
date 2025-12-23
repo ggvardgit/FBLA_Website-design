@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Access DBQ tools, practice questions, and study materials">
+    <title>Resources Hub | APUSH Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="APUSH Learning Hub Home">
+                <span class="logo-text">APUSH Hub</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="units.html" class="nav-link">Units</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="schedule.html" class="nav-link">Live Study</a></li>
+                <li><a href="resources.html" class="nav-link active" aria-current="page">Resources</a></li>
+                <li><a href="api-config.html" class="nav-link">AI Settings</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="motion-toggle" aria-label="Toggle reduced motion" title="Reduce motion">
+                    <span class="motion-icon">⚙️</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="resources-header" aria-labelledby="resources-heading">
+            <div class="container">
+                <h1 id="resources-heading" class="page-title">Resources Hub</h1>
+                <p class="page-subtitle">Access DBQ annotation tools, practice questions, and comprehensive study materials</p>
+            </div>
+        </section>
+
+        <section class="resources-content">
+            <div class="container">
+                <div class="resources-filters">
+                    <div class="filter-group">
+                        <label for="period-filter-resources" class="filter-label">Period:</label>
+                        <select id="period-filter-resources" class="filter-select" aria-label="Filter by period">
+                            <option value="all">All Periods</option>
+                            <option value="2">Period 2</option>
+                            <option value="3">Period 3</option>
+                            <option value="4">Period 4</option>
+                            <option value="5">Period 5</option>
+                            <option value="6">Period 6</option>
+                            <option value="7">Period 7</option>
+                            <option value="8">Period 8</option>
+                            <option value="9">Period 9</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="skill-filter" class="filter-label">Skill:</label>
+                        <select id="skill-filter" class="filter-select" aria-label="Filter by skill">
+                            <option value="all">All Skills</option>
+                            <option value="saq">SAQ</option>
+                            <option value="dbq">DBQ</option>
+                            <option value="leq">LEQ</option>
+                            <option value="mcq">Multiple Choice</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="format-filter" class="filter-label">Format:</label>
+                        <select id="format-filter" class="filter-select" aria-label="Filter by format">
+                            <option value="all">All Formats</option>
+                            <option value="practice">Practice Questions</option>
+                            <option value="tool">Interactive Tools</option>
+                            <option value="guide">Study Guides</option>
+                            <option value="timeline">Timelines</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="resources-grid" id="resources-grid" role="list">
+                    <!-- Resources will be dynamically generated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- DBQ Tool Modal -->
+        <div class="modal" id="dbq-modal" role="dialog" aria-labelledby="dbq-modal-title" aria-hidden="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="dbq-modal-title" class="modal-title">DBQ Annotation Tool</h2>
+                    <button class="modal-close" aria-label="Close modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="dbq-tool">
+                        <div class="dbq-document-area">
+                            <h3 class="dbq-section-title">Document</h3>
+                            <div class="dbq-document" id="dbq-document" contenteditable="true" role="textbox" aria-label="DBQ document text">
+                                <p>Select a DBQ prompt to begin annotation...</p>
+                            </div>
+                        </div>
+                        <div class="dbq-annotation-panel">
+                            <h3 class="dbq-section-title">Annotations</h3>
+                            <div class="annotation-controls">
+                                <button class="annotation-btn" data-type="thesis">Thesis</button>
+                                <button class="annotation-btn" data-type="context">Context</button>
+                                <button class="annotation-btn" data-type="evidence">Evidence</button>
+                                <button class="annotation-btn" data-type="analysis">Analysis</button>
+                            </div>
+                            <div class="annotations-list" id="annotations-list"></div>
+                        </div>
+                        <div class="dbq-scorer">
+                            <h3 class="dbq-section-title">DBQ Scorer</h3>
+                            <div class="scorer-form">
+                                <div class="scorer-item">
+                                    <label>Thesis (1 pt):</label>
+                                    <input type="checkbox" id="thesis-point" aria-label="Thesis point">
+                                </div>
+                                <div class="scorer-item">
+                                    <label>Context (1 pt):</label>
+                                    <input type="checkbox" id="context-point" aria-label="Context point">
+                                </div>
+                                <div class="scorer-item">
+                                    <label>Evidence (3 pts):</label>
+                                    <input type="number" id="evidence-points" min="0" max="3" value="0" aria-label="Evidence points">
+                                </div>
+                                <div class="scorer-item">
+                                    <label>Analysis (2 pts):</label>
+                                    <input type="number" id="analysis-points" min="0" max="2" value="0" aria-label="Analysis points">
+                                </div>
+                                <div class="scorer-total">
+                                    <strong>Total Score: <span id="dbq-total-score">0</span>/7</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <p>&copy; 2024 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="resources.js"></script>
+</body>
+</html>

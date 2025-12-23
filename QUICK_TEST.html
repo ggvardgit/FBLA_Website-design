@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Test - APUSH Learning Hub</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+        }
+        .pass { color: #10b981; }
+        .fail { color: #ef4444; }
+        .info { color: #2563eb; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #1d4ed8; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 APUSH Learning Hub - Quick Test</h1>
+    
+    <div class="test-section">
+        <h2>1. File Validation</h2>
+        <button onclick="testFiles()">Check Required Files</button>
+        <div id="file-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Navigation Test</h2>
+        <button onclick="testNavigation()">Test Navigation Links</button>
+        <div id="nav-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Data Structure Test</h2>
+        <button onclick="testData()">Validate APUSH Data</button>
+        <div id="data-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. LocalStorage Test</h2>
+        <button onclick="testStorage()">Test Data Persistence</button>
+        <div id="storage-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. AI Integration Test</h2>
+        <button onclick="testAI()">Check AI Setup</button>
+        <div id="ai-results"></div>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script src="apush-data.js"></script>
+    <script src="gemini-api.js"></script>
+    <script src="script.js"></script>
+    <script>
+        function testFiles() {
+            const results = document.getElementById('file-results');
+            results.innerHTML = '<p>Checking files...</p>';
+            
+            const checks = [];
+            
+            // Check APUSH_DATA
+            if (typeof APUSH_DATA !== 'undefined') {
+                checks.push('<div class="test-item pass">✅ APUSH_DATA loaded</div>');
+            } else {
+                checks.push('<div class="test-item fail">❌ APUSH_DATA not found</div>');
+            }
+            
+            // Check APUSH object
+            if (typeof APUSH !== 'undefined') {
+                checks.push('<div class="test-item pass">✅ APUSH utilities loaded</div>');
+            } else {
+                checks.push('<div class="test-item fail">❌ APUSH utilities not found</div>');
+            }
+            
+            // Check GeminiAPI
+            if (typeof GeminiAPI !== 'undefined') {
+                checks.push('<div class="test-item pass">✅ GeminiAPI loaded</div>');
+            } else {
+                checks.push('<div class="test-item info">ℹ️ GeminiAPI not loaded (optional)</div>');
+            }
+            
+            results.innerHTML = checks.join('');
+        }
+        
+        function testNavigation() {
+            const results = document.getElementById('nav-results');
+            results.innerHTML = '<p>Testing navigation...</p>';
+            
+            const pages = [
+                'index.html',
+                'units.html',
+                'dashboard.html',
+                'schedule.html',
+                'resources.html',
+                'api-config.html'
+            ];
+            
+            const checks = pages.map(page => {
+                // Check if file exists by trying to fetch it
+                return fetch(page, { method: 'HEAD' })
+                    .then(() => `<div class="test-item pass">✅ ${page} exists</div>`)
+                    .catch(() => `<div class="test-item fail">❌ ${page} not found</div>`);
+            });
+            
+            Promise.all(checks).then(html => {
+                results.innerHTML = html.join('');
+            });
+        }
+        
+        function testData() {
+            const results = document.getElementById('data-results');
+            results.innerHTML = '<p>Validating data structure...</p>';
+            
+            if (!window.APUSH_DATA) {
+                results.innerHTML = '<div class="test-item fail">❌ APUSH_DATA not loaded</div>';
+                return;
+            }
+            
+            const checks = [];
+            const periods = APUSH_DATA.periods;
+            const periodCount = Object.keys(periods).length;
+            
+            if (periodCount === 8) {
+                checks.push('<div class="test-item pass">✅ All 8 periods present</div>');
+            } else {
+                checks.push(`<div class="test-item fail">❌ Expected 8 periods, found ${periodCount}</div>`);
+            }
+            
+            // Check sample period
+            const sample = periods[3];
+            if (sample) {
+                const required = ['number', 'name', 'dates', 'themes', 'timeline', 'causesEffects'];
+                const missing = required.filter(f => !sample[f]);
+                if (missing.length === 0) {
+                    checks.push('<div class="test-item pass">✅ Period data structure valid</div>');
+                } else {
+                    checks.push(`<div class="test-item fail">❌ Missing fields: ${missing.join(', ')}</div>`);
+                }
+            }
+            
+            results.innerHTML = checks.join('');
+        }
+        
+        function testStorage() {
+            const results = document.getElementById('storage-results');
+            results.innerHTML = '<p>Testing LocalStorage...</p>';
+            
+            const checks = [];
+            
+            try {
+                // Test write
+                localStorage.setItem('test_key', 'test_value');
+                const read = localStorage.getItem('test_key');
+                if (read === 'test_value') {
+                    checks.push('<div class="test-item pass">✅ LocalStorage read/write works</div>');
+                    localStorage.removeItem('test_key');
+                } else {
+                    checks.push('<div class="test-item fail">❌ LocalStorage read/write failed</div>');
+                }
+                
+                // Check existing data
+                const progress = localStorage.getItem('userProgress');
+                if (progress) {
+                    checks.push('<div class="test-item info">ℹ️ User progress data found</div>');
+                } else {
+                    checks.push('<div class="test-item info">ℹ️ No user progress (normal for new users)</div>');
+                }
+                
+                const apiKey = localStorage.getItem('gemini_api_key');
+                if (apiKey) {
+                    checks.push('<div class="test-item info">ℹ️ Gemini API key configured</div>');
+                } else {
+                    checks.push('<div class="test-item info">ℹ️ No API key (will use fallback)</div>');
+                }
+            } catch (e) {
+                checks.push(`<div class="test-item fail">❌ LocalStorage error: ${e.message}</div>`);
+            }
+            
+            results.innerHTML = checks.join('');
+        }
+        
+        function testAI() {
+            const results = document.getElementById('ai-results');
+            results.innerHTML = '<p>Checking AI integration...</p>';
+            
+            const checks = [];
+            
+            if (typeof GeminiAPI === 'undefined') {
+                checks.push('<div class="test-item fail">❌ GeminiAPI not loaded</div>');
+                results.innerHTML = checks.join('');
+                return;
+            }
+            
+            checks.push('<div class="test-item pass">✅ GeminiAPI loaded</div>');
+            
+            if (GeminiAPI.hasApiKey()) {
+                checks.push('<div class="test-item pass">✅ API key configured</div>');
+                checks.push('<div class="test-item info">ℹ️ AI question generation enabled</div>');
+            } else {
+                checks.push('<div class="test-item info">ℹ️ No API key (will use fallback questions)</div>');
+            }
+            
+            results.innerHTML = checks.join('');
+        }
+        
+        // Run all tests on load
+        window.addEventListener('load', () => {
+            console.log('🧪 Quick Test Page Loaded');
+            console.log('Click buttons above to run individual tests');
+        });
+    </script>
+</body>
+</html>
+

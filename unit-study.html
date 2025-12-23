@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Study APUSH period with interactive timelines, practice questions, and primary sources">
+    <title>Unit Study | APUSH Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="APUSH Learning Hub Home">
+                <span class="logo-text">APUSH Hub</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="units.html" class="nav-link">Units</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="schedule.html" class="nav-link">Live Study</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="api-config.html" class="nav-link">AI Settings</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="motion-toggle" aria-label="Toggle reduced motion" title="Reduce motion">
+                    <span class="motion-icon">⚙️</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="unit-study-header" aria-labelledby="unit-heading">
+            <div class="container">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="units.html">Units</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span id="current-period-name">Period</span>
+                </nav>
+                <h1 id="unit-heading" class="page-title">Period <span id="period-number">2</span></h1>
+                <p class="page-subtitle" id="period-dates">1607-1754</p>
+                <div class="unit-progress">
+                    <div class="unit-progress-bar">
+                        <div class="unit-progress-fill" id="unit-progress-fill" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <span class="unit-progress-text" id="unit-progress-text">0% Complete</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="unit-study-content">
+            <div class="container">
+                <div class="unit-tabs" role="tablist" aria-label="Unit study sections">
+                    <button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true" aria-controls="overview-panel">Overview</button>
+                    <button class="tab-btn" data-tab="timeline" role="tab" aria-selected="false" aria-controls="timeline-panel">Timeline</button>
+                    <button class="tab-btn" data-tab="causes-effects" role="tab" aria-selected="false" aria-controls="causes-effects-panel">Causes & Effects</button>
+                    <button class="tab-btn" data-tab="primary-sources" role="tab" aria-selected="false" aria-controls="primary-sources-panel">Primary Sources</button>
+                    <button class="tab-btn" data-tab="practice" role="tab" aria-selected="false" aria-controls="practice-panel">Practice</button>
+                </div>
+
+                <div class="tab-panels">
+                    <div class="tab-panel active" id="overview-panel" role="tabpanel" aria-labelledby="overview-tab">
+                        <div class="overview-content">
+                            <div class="themes-section">
+                                <h2 class="section-title">Key Themes</h2>
+                                <div class="themes-grid" id="themes-grid"></div>
+                            </div>
+                            <div class="skills-section">
+                                <h2 class="section-title">AP Exam Skills Tested</h2>
+                                <div class="skills-list" id="skills-list"></div>
+                            </div>
+                            <div class="key-concepts-section">
+                                <h2 class="section-title">Key Concepts</h2>
+                                <div class="concepts-list" id="concepts-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="timeline-panel" role="tabpanel" aria-labelledby="timeline-tab">
+                        <div class="timeline-container">
+                            <div class="timeline" id="timeline" role="list">
+                                <!-- Timeline events will be dynamically generated -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="causes-effects-panel" role="tabpanel" aria-labelledby="causes-effects-tab">
+                        <div class="causes-effects-container">
+                            <div class="chain-container" id="chain-container">
+                                <!-- Cause and effect chains will be dynamically generated -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="primary-sources-panel" role="tabpanel" aria-labelledby="primary-sources-tab">
+                        <div class="primary-sources-container">
+                            <div class="sources-grid" id="sources-grid" role="list">
+                                <!-- Primary sources will be dynamically generated -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="practice-panel" role="tabpanel" aria-labelledby="practice-tab">
+                        <div class="practice-container">
+                            <div class="practice-type-selector">
+                                <button class="practice-type-btn active" data-type="saq">SAQ</button>
+                                <button class="practice-type-btn" data-type="dbq">DBQ</button>
+                                <button class="practice-type-btn" data-type="leq">LEQ</button>
+                            </div>
+                            <div class="practice-content" id="practice-content">
+                                <!-- Practice questions will be dynamically generated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Primary Source Modal -->
+    <div class="modal" id="source-modal" role="dialog" aria-labelledby="source-modal-title" aria-hidden="true">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="source-modal-title" class="modal-title">Primary Source Analysis</h2>
+                <button class="modal-close" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="source-content" id="source-content"></div>
+                <div class="source-analysis">
+                    <h3>Analysis Questions</h3>
+                    <div class="analysis-questions" id="analysis-questions"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <p>&copy; 2024 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
+        </div>
+    </footer>
+
+    <script src="apush-data.js"></script>
+    <script src="gemini-api.js"></script>
+    <script src="script.js"></script>
+    <script src="unit-study.js"></script>
+</body>
+</html>

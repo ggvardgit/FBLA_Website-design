@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Track your APUSH progress and mastery across all periods">
+    <title>Student Dashboard | APUSH Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="APUSH Learning Hub Home">
+                <span class="logo-text">APUSH Hub</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="units.html" class="nav-link">Units</a></li>
+                <li><a href="dashboard.html" class="nav-link active" aria-current="page">Dashboard</a></li>
+                <li><a href="schedule.html" class="nav-link">Live Study</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="api-config.html" class="nav-link">AI Settings</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="motion-toggle" aria-label="Toggle reduced motion" title="Reduce motion">
+                    <span class="motion-icon">⚙️</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="dashboard-header" aria-labelledby="dashboard-heading">
+            <div class="container">
+                <h1 id="dashboard-heading" class="page-title">Student Dashboard</h1>
+                <p class="page-subtitle">Track your progress, mastery, and identify areas for improvement</p>
+            </div>
+        </section>
+
+        <section class="dashboard-content">
+            <div class="container">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card overview-card">
+                        <h2 class="card-title">Overall Progress</h2>
+                        <div class="overall-stats">
+                            <div class="stat-circle">
+                                <svg class="progress-ring" width="120" height="120">
+                                    <circle class="progress-ring-circle" cx="60" cy="60" r="54" fill="transparent" stroke="currentColor" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="0"></circle>
+                                    <circle class="progress-ring-progress" cx="60" cy="60" r="54" fill="transparent" stroke="var(--primary-color)" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="0"></circle>
+                                </svg>
+                                <div class="stat-circle-content">
+                                    <span class="stat-circle-value" id="overall-mastery">0%</span>
+                                    <span class="stat-circle-label">Mastery</span>
+                                </div>
+                            </div>
+                            <div class="overall-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Periods Completed:</span>
+                                    <span class="detail-value" id="periods-completed-count">0/8</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Skills Mastered:</span>
+                                    <span class="detail-value" id="skills-mastered-count">0/24</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Practice Questions:</span>
+                                    <span class="detail-value" id="total-practice-questions">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card mastery-card">
+                        <h2 class="card-title">Mastery by Period</h2>
+                        <div class="mastery-list" id="mastery-list" role="list">
+                            <!-- Period mastery items will be dynamically generated -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card recommendation-card">
+                        <h2 class="card-title">Study Next</h2>
+                        <div class="recommendation-content" id="recommendation-content">
+                            <p class="recommendation-text">Complete a period to get personalized recommendations</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card weaknesses-card">
+                        <h2 class="card-title">Weakest Themes</h2>
+                        <div class="weaknesses-list" id="weaknesses-list" role="list">
+                            <!-- Weak themes will be dynamically generated -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card skills-card">
+                        <h2 class="card-title">AP Exam Skills Progress</h2>
+                        <div class="skills-grid" id="skills-grid" role="list">
+                            <!-- Skills will be dynamically generated -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card activity-card">
+                        <h2 class="card-title">Recent Activity</h2>
+                        <div class="activity-list" id="activity-list" role="list">
+                            <!-- Activity items will be dynamically generated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <p>&copy; 2024 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
+        </div>
+    </footer>
+
+    <script src="apush-data.js"></script>
+    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

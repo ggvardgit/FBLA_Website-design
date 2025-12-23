@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AP U.S. History Learning Hub - Master all periods and excel on your AP exam">
+    <title>APUSH Learning Hub | Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="APUSH Learning Hub Home">
+                <span class="logo-text">APUSH Hub</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active" aria-current="page">Home</a></li>
+                <li><a href="units.html" class="nav-link">Units</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="schedule.html" class="nav-link">Live Study</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="api-config.html" class="nav-link">AI Settings</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="motion-toggle" aria-label="Toggle reduced motion" title="Reduce motion">
+                    <span class="motion-icon">⚙️</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="hero" aria-labelledby="hero-heading">
+            <div class="hero-container">
+                <h1 id="hero-heading" class="hero-title">Master AP U.S. History</h1>
+                <p class="hero-subtitle">Your comprehensive learning hub for all APUSH periods, designed to boost exam readiness and maximize your score.</p>
+                
+                <div class="readiness-card">
+                    <div class="readiness-header">
+                        <h2 class="readiness-title">Exam Readiness</h2>
+                        <span class="readiness-percentage" id="readiness-percentage">0%</span>
+                    </div>
+                    <div class="readiness-bar">
+                        <div class="readiness-progress" id="readiness-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p class="readiness-description">Based on your progress across all periods</p>
+                </div>
+
+                <div class="action-grid">
+                    <a href="units.html" class="action-card" aria-label="Explore APUSH units">
+                        <div class="action-icon">📚</div>
+                        <h3 class="action-title">Units</h3>
+                        <p class="action-description">Explore all 8 periods from Colonial America to Modern Era</p>
+                    </a>
+                    <a href="dashboard.html" class="action-card" aria-label="View your dashboard">
+                        <div class="action-icon">📊</div>
+                        <h3 class="action-title">Dashboard</h3>
+                        <p class="action-description">Track your progress and identify areas for improvement</p>
+                    </a>
+                    <a href="schedule.html" class="action-card" aria-label="Join live study sessions">
+                        <div class="action-icon">🎓</div>
+                        <h3 class="action-title">Live Study</h3>
+                        <p class="action-description">Join scheduled study sessions and review topics</p>
+                    </a>
+                    <a href="resources.html" class="action-card" aria-label="Access study resources">
+                        <div class="action-icon">📖</div>
+                        <h3 class="action-title">Resources</h3>
+                        <p class="action-description">DBQ tools, practice questions, and study materials</p>
+                    </a>
+                </div>
+
+                <div class="quick-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="periods-completed">0</span>
+                        <span class="stat-label">Periods Completed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="practice-questions">0</span>
+                        <span class="stat-label">Practice Questions</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="study-hours">0</span>
+                        <span class="stat-label">Study Hours</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" aria-labelledby="features-heading">
+            <div class="container">
+                <h2 id="features-heading" class="section-title">Why Choose APUSH Hub?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">AP-Aligned Content</h3>
+                        <p class="feature-text">All content organized by College Board periods with official themes and skills</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">Adaptive Learning</h3>
+                        <p class="feature-text">Personalized study paths based on your quiz performance and mastery levels</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3 class="feature-title">Practice Questions</h3>
+                        <p class="feature-text">SAQ, DBQ, and LEQ practice with instant feedback aligned to College Board rubrics</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3 class="feature-title">Progress Tracking</h3>
+                        <p class="feature-text">Monitor your mastery across all periods and identify weakest themes</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3 class="feature-title">AI-Generated Questions</h3>
+                        <p class="feature-text">Get unlimited practice questions powered by Gemini AI, tailored to each period</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <p>&copy; 2024 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
+        </div>
+    </footer>
+
+    <script src="gemini-api.js"></script>
+    <script src="script.js"></script>
+    <script src="home.js"></script>
+</body>
+</html>

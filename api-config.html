@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Configure Gemini API key for AI-generated questions">
+    <title>API Configuration | APUSH Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="APUSH Learning Hub Home">
+                <span class="logo-text">APUSH Hub</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="units.html" class="nav-link">Units</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="schedule.html" class="nav-link">Live Study</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="api-config.html" class="nav-link active" aria-current="page">AI Settings</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="motion-toggle" aria-label="Toggle reduced motion" title="Reduce motion">
+                    <span class="motion-icon">⚙️</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="api-config-section" aria-labelledby="config-heading">
+            <div class="container">
+                <h1 id="config-heading" class="page-title">Gemini API Configuration</h1>
+                <p class="page-subtitle">Enter your Google Gemini API key to enable AI-generated practice questions</p>
+                
+                <div class="config-card">
+                    <div class="config-form">
+                        <label for="api-key-input" class="config-label">
+                            Gemini API Key
+                            <span class="config-help" title="Get your API key from https://makersuite.google.com/app/apikey">ℹ️</span>
+                        </label>
+                        <input 
+                            type="password" 
+                            id="api-key-input" 
+                            class="config-input" 
+                            placeholder="Enter your Gemini API key"
+                            aria-label="Gemini API key input"
+                        />
+                        <p class="config-description">
+                            Your API key is stored locally in your browser and never shared. 
+                            Get a free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>.
+                        </p>
+                        
+                        <div class="config-status" id="api-status">
+                            <span id="status-text">Status: Not configured</span>
+                        </div>
+                        
+                        <div class="config-actions">
+                            <button class="submit-btn" id="save-api-key" onclick="saveApiKey()">
+                                Save API Key
+                            </button>
+                            <button class="submit-btn" id="test-api-key" onclick="testApiKey()" style="background-color: var(--secondary-color);">
+                                Test Connection
+                            </button>
+                            <button class="submit-btn" id="clear-api-key" onclick="clearApiKey()" style="background-color: var(--error-color);">
+                                Clear API Key
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="config-info">
+                        <h3>About AI-Generated Questions</h3>
+                        <ul>
+                            <li>✅ Questions are generated specifically for each APUSH period</li>
+                            <li>✅ Aligned with College Board APUSH standards</li>
+                            <li>✅ Includes SAQ, DBQ, and LEQ formats</li>
+                            <li>✅ Questions adapt to period themes and key concepts</li>
+                            <li>✅ Works offline with fallback questions if API unavailable</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: var(--spacing-lg);">Privacy & Security</h3>
+                        <ul>
+                            <li>🔒 API key stored only in your browser's local storage</li>
+                            <li>🔒 No data is sent to external servers except Google's Gemini API</li>
+                            <li>🔒 Questions are generated on-demand and not stored</li>
+                            <li>🔒 You can clear your API key at any time</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <p>&copy; 2024 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
+        </div>
+    </footer>
+
+    <script src="gemini-api.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Load saved API key status
+        document.addEventListener('DOMContentLoaded', () => {
+            updateApiStatus();
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) {
+                document.getElementById('api-key-input').value = '••••••••••••••••';
+            }
+        });
+
+        function updateApiStatus() {
+            const statusText = document.getElementById('status-text');
+            const hasKey = GeminiAPI.hasApiKey();
+            
+            if (hasKey) {
+                statusText.textContent = 'Status: ✓ API Key Configured';
+                statusText.style.color = 'var(--success-color)';
+            } else {
+                statusText.textContent = 'Status: Not configured';
+                statusText.style.color = 'var(--text-secondary)';
+            }
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('api-key-input');
+            const key = input.value.trim();
+            
+            if (!key || key === '••••••••••••••••') {
+                alert('Please enter a valid API key');
+                return;
+            }
+            
+            if (GeminiAPI.setGeminiApiKey(key)) {
+                input.value = '••••••••••••••••';
+                input.type = 'password';
+                updateApiStatus();
+                alert('API key saved successfully!');
+            } else {
+                alert('Failed to save API key. Please try again.');
+            }
+        }
+
+        async function testApiKey() {
+            const input = document.getElementById('api-key-input');
+            const key = input.value.trim();
+            
+            if (!key || key === '••••••••••••••••') {
+                // Use saved key
+                if (!GeminiAPI.hasApiKey()) {
+                    alert('Please enter and save an API key first');
+                    return;
+                }
+            } else {
+                GeminiAPI.setGeminiApiKey(key);
+            }
+            
+            const testBtn = document.getElementById('test-api-key');
+            testBtn.disabled = true;
+            testBtn.textContent = 'Testing...';
+            
+            try {
+                // Test with a simple SAQ generation
+                const testPeriod = {
+                    number: 3,
+                    name: "Revolution and Early Republic",
+                    dates: "1754-1800",
+                    themes: ["American Revolution", "Constitution", "Early Republic"]
+                };
+                
+                const question = await GeminiAPI.generateSAQ(testPeriod);
+                
+                if (question) {
+                    alert('✓ API connection successful! AI question generation is working.');
+                    updateApiStatus();
+                } else {
+                    alert('API key is set but question generation failed. Check your key and try again.');
+                }
+            } catch (error) {
+                alert('✗ API connection failed: ' + error.message + '\n\nPlease check your API key and try again.');
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = 'Test Connection';
+            }
+        }
+
+        function clearApiKey() {
+            if (confirm('Are you sure you want to clear your API key? AI-generated questions will no longer work.')) {
+                localStorage.removeItem('gemini_api_key');
+                GeminiAPI.GEMINI_CONFIG.apiKey = '';
+                document.getElementById('api-key-input').value = '';
+                updateApiStatus();
+                alert('API key cleared.');
+            }
+        }
+    </script>
+</body>
+</html>
