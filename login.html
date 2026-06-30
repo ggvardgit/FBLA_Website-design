@@ -3,223 +3,578 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sign in to APUSH Learning Hub">
     <title>Sign In | APUSH Learning Hub</title>
     <link rel="stylesheet" href="styles.css">
-
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f6fb;
+        .login-container {
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            padding: var(--spacing-xl);
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-primary) 50%, var(--bg-secondary) 100%);
         }
-
+        
         .login-card {
-            background: white;
-            padding: 40px;
-            width: 350px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-2xl);
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        h1 {
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-2xl);
         }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+        
+        .login-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
         }
-
-        button {
+        
+        .login-subtitle {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.875rem;
+        }
+        
+        .form-input {
             width: 100%;
-            padding: 10px;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: var(--font-sans);
+            transition: all var(--transition-base);
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-input.error {
+            border-color: var(--error-color);
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
             border: none;
-            background: #2563eb;
-            color: white;
-            border-radius: 6px;
+            color: var(--text-secondary);
             cursor: pointer;
+            padding: var(--spacing-xs);
+            font-size: 0.875rem;
+            transition: color var(--transition-fast);
         }
-
-        button:hover {
-            background: #1e4fd1;
+        
+        .password-toggle:hover {
+            color: var(--primary-color);
         }
-
-        .links {
+        
+        .error-message {
+            display: none;
+            padding: var(--spacing-md);
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid var(--error-color);
+            border-radius: var(--border-radius);
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-bottom: var(--spacing-lg);
+            animation: slideDown 0.3s ease;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .success-message {
+            display: none;
+            padding: var(--spacing-md);
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--success-color);
+            border-radius: var(--border-radius);
+            color: var(--success-color);
+            font-size: 0.875rem;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-xl);
+            background-color: var(--primary-color);
+            color: var(--text-inverse);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary.loading {
+            color: transparent;
+        }
+        
+        .btn-primary.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid var(--text-inverse);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .form-footer {
             text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-xl);
+            border-top: 1px solid var(--border-color);
         }
-
-        .links a {
-            color: #2563eb;
-            cursor: pointer;
-            margin: 0 5px;
+        
+        .form-footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color var(--transition-fast);
+            display: inline-block;
+            margin: 0 var(--spacing-sm);
+        }
+        
+        .form-footer-link:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: var(--spacing-xl);
+            left: var(--spacing-xl);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .back-link:hover {
+            color: var(--primary-color);
         }
     </style>
 </head>
-
 <body>
-
-    <div class="login-card">
-
-        <h1>APUSH Hub</h1>
-
-        <form id="login-form">
-            <input type="email" id="email" placeholder="Email address" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button type="submit">Sign In</button>
-        </form>
-
-        <div class="links">
-            <a id="create-account">Create Account</a> |
-            <a id="forgot-password">Forgot Password</a>
+    <a href="index.html" class="back-link">← Back to Home</a>
+    
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1 class="login-title">Sign In</h1>
+                <p class="login-subtitle">Access your personalized learning experience</p>
+            </div>
+            
+            <div id="error-message" class="error-message" role="alert"></div>
+            <div id="success-message" class="success-message" role="alert"></div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="your.email@example.com"
+                        required
+                        autocomplete="email"
+                        aria-describedby="email-error"
+                    >
+                    <span id="email-error" class="error-message" role="alert"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="form-input" 
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                            aria-describedby="password-error"
+                        >
+                        <button 
+                            type="button" 
+                            class="password-toggle" 
+                            id="toggle-password"
+                            aria-label="Toggle password visibility"
+                        >
+                            Show
+                        </button>
+                    </div>
+                    <span id="password-error" class="error-message" role="alert"></span>
+                </div>
+                
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    Sign In
+                </button>
+            </form>
+            
+            <div id="signup-section" class="form-footer" style="display:none;">
+                <h3 style="margin-bottom:1rem;">Create Account</h3>
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-email" class="form-label">Email</label>
+                        <input type="email" id="signup-email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password" class="form-label">Password (min 8 characters)</label>
+                        <input type="password" id="signup-password" class="form-input" required minlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm" class="form-label">Confirm Password</label>
+                        <input type="password" id="signup-confirm" class="form-input" required minlength="8">
+                    </div>
+                    <button type="submit" class="btn-primary" id="signup-btn">Create Account</button>
+                </form>
+                <p style="margin-top:1rem;"><a href="#" id="back-to-login" class="form-footer-link">← Back to Sign In</a></p>
+            </div>
+            <div id="login-footer" class="form-footer">
+                <a href="#" id="create-account-link" class="form-footer-link">Create Account</a>
+                <span style="color: var(--text-muted);">|</span>
+                <a href="#" id="forgot-password-link" class="form-footer-link">Forgot Password?</a>
+            </div>
         </div>
-
     </div>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-auth.js"></script>
+    <script src="supabase-persistence.js"></script>
+    <script src="user-session.js"></script>
     <script>
-        /////////////////////////////
-        // Simple Auth System
-        /////////////////////////////
-
-        const AuthManager = {
-            getUsers() {
-                return JSON.parse(localStorage.getItem("apush_users")) || [];
-            },
-
-            saveUsers(users) {
-                localStorage.setItem("apush_users", JSON.stringify(users));
-            },
-
-            createAccount(email, password) {
-                let users = this.getUsers();
-
-                if (users.find(u => u.email === email)) {
-                    throw new Error("Account already exists");
+        function initLoginForm() {
+            const form = document.getElementById('login-form');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('toggle-password');
+            const submitBtn = document.getElementById('submit-btn');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const createAccountLink = document.getElementById('create-account-link');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+            
+            // Password toggle
+            togglePassword.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
+            });
+            
+            // Email validation
+            emailInput.addEventListener('blur', validateEmail);
+            emailInput.addEventListener('input', () => {
+                if (emailInput.classList.contains('error')) {
+                    validateEmail();
                 }
-
-                const newUser = {
-                    id: Date.now(),
-                    email: email,
-                    password: password
-                };
-
-                users.push(newUser);
-                this.saveUsers(users);
-            },
-
-            login(email, password) {
-                let users = this.getUsers();
-
-                const user = users.find(u => u.email === email && u.password === password);
-
-                if (!user) {
-                    throw new Error("Invalid email or password");
+            });
+            
+            // Password validation
+            passwordInput.addEventListener('blur', validatePassword);
+            passwordInput.addEventListener('input', () => {
+                if (passwordInput.classList.contains('error')) {
+                    validatePassword();
                 }
-
-                localStorage.setItem("apush_current_user", JSON.stringify(user));
-            },
-
-            logout() {
-                localStorage.removeItem("apush_current_user");
-            },
-
-            getCurrentUser() {
-                return JSON.parse(localStorage.getItem("apush_current_user"));
-            },
-
-            resetPassword(email, newPassword) {
-                let users = this.getUsers();
-                let user = users.find(u => u.email === email);
-
-                if (!user) {
-                    throw new Error("Account not found");
+                updateSubmitButton();
+            });
+            
+            // Form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
                 }
-
-                user.password = newPassword;
-                this.saveUsers(users);
-            }
-        };
-
-        /////////////////////////////
-        // LOGIN
-        /////////////////////////////
-
-        document.getElementById("login-form").addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            try {
-                AuthManager.login(email, password);
-                alert("Login successful!");
-                window.location.href = "index.html";
-            } catch (err) {
-                alert(err.message);
-            }
-        });
-
-        /////////////////////////////
-        // CREATE ACCOUNT
-        /////////////////////////////
-
-        document.getElementById("create-account").addEventListener("click", () => {
-            const email = prompt("Enter your email");
-            if (!email) return;
-
-            const password = prompt("Create a password (min 6 characters)");
-            if (!password || password.length < 6) {
-                alert("Password must be at least 6 characters");
-                return;
-            }
-
-            try {
-                AuthManager.createAccount(email, password);
-                alert("Account created! You can now sign in.");
-            } catch (err) {
-                alert(err.message);
-            }
-        });
-
-        /////////////////////////////
-        // FORGOT PASSWORD
-        /////////////////////////////
-
-        document.getElementById("forgot-password").addEventListener("click", () => {
-            const email = prompt("Enter your email");
-            if (!email) return;
-
-            const newPassword = prompt("Enter a new password");
-            if (!newPassword || newPassword.length < 6) {
-                alert("Password must be at least 6 characters");
-                return;
-            }
-
-            try {
-                AuthManager.resetPassword(email, newPassword);
-                alert("Password reset successful!");
-            } catch (err) {
-                alert(err.message);
-            }
-        });
-
-        /////////////////////////////
-        // LOGOUT FUNCTION
-        /////////////////////////////
-
-        function logout() {
-            AuthManager.logout();
-            window.location.href = "login.html";
+                
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                
+                submitBtn.disabled = true;
+                submitBtn.classList.add('loading');
+                errorMessage.classList.remove('show');
+                successMessage.classList.remove('show');
+                
+                try {
+                    if (window.SupabaseAuth && window.SupabaseAuth.isConfigured()) {
+                        const { user } = await window.SupabaseAuth.signIn(email, password);
+                        await window.SupabaseAuth.syncSessionToAuthManager(user);
+                    } else {
+                        window.AuthManager.authenticate(email, password);
+                    }
+                    successMessage.textContent = 'Login successful! Redirecting...';
+                    successMessage.classList.add('show');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 500);
+                } catch (error) {
+                    errorMessage.textContent = error.message || 'An error occurred. Please try again.';
+                    errorMessage.classList.add('show');
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('loading');
+                }
+            });
+            
+            // Toggle signup form
+            createAccountLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('login-footer').style.display = 'none';
+                document.getElementById('signup-section').style.display = 'block';
+            });
+            document.getElementById('back-to-login').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('signup-section').style.display = 'none';
+                document.getElementById('login-form').style.display = '';
+                document.getElementById('login-footer').style.display = '';
+            });
+            document.getElementById('signup-form').addEventListener('submit', handleSignUp);
+            
+            // Forgot password handler
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showForgotPasswordModal();
+            });
         }
-    </script>
+        
+        function validateEmail() {
+            const emailInput = document.getElementById('email');
+            const emailError = document.getElementById('email-error');
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'Email is required.';
+                emailError.classList.add('show');
+                return false;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'Please enter a valid email address.';
+                emailError.classList.add('show');
+                return false;
+            }
+            
+            emailInput.classList.remove('error');
+            emailError.classList.remove('show');
+            return true;
+        }
+        
+        function validatePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordError = document.getElementById('password-error');
+            const password = passwordInput.value;
+            
+            if (!password) {
+                passwordInput.classList.add('error');
+                passwordError.textContent = 'Password is required.';
+                passwordError.classList.add('show');
+                return false;
+            }
+            
+            if (password.length < 8) {
+                passwordInput.classList.add('error');
+                passwordError.textContent = 'Password must be at least 8 characters.';
+                passwordError.classList.add('show');
+                return false;
+            }
+            
+            passwordInput.classList.remove('error');
+            passwordError.classList.remove('show');
+            return true;
+        }
+        
+        function validateForm() {
+            const emailValid = validateEmail();
+            const passwordValid = validatePassword();
+            return emailValid && passwordValid;
+        }
+        
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submit-btn');
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            submitBtn.disabled = !(email && password && password.length >= 8);
+        }
+        
+        async function handleSignUp(e) {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const signupBtn = document.getElementById('signup-btn');
+            if (password !== confirm) {
+                errorMessage.textContent = 'Passwords do not match.';
+                errorMessage.classList.add('show');
+                return;
+            }
+            if (password.length < 8) {
+                errorMessage.textContent = 'Password must be at least 8 characters.';
+                errorMessage.classList.add('show');
+                return;
+            }
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+            signupBtn.disabled = true;
+            signupBtn.classList.add('loading');
+            try {
+                if (window.SupabaseAuth && window.SupabaseAuth.isConfigured()) {
+                    const result = await window.SupabaseAuth.signUp(email, password);
+                    if (result.needsVerification) {
+                        successMessage.textContent = 'Account created! Please check your email to verify your account before signing in.';
+                        successMessage.classList.add('show');
+                        document.getElementById('signup-section').style.display = 'none';
+                        document.getElementById('login-form').style.display = '';
+                        document.getElementById('login-footer').style.display = '';
+                    } else if (result.session) {
+                        await window.SupabaseAuth.syncSessionToAuthManager(result.user);
+                        successMessage.textContent = 'Account created! Redirecting...';
+                        successMessage.classList.add('show');
+                        setTimeout(() => { window.location.href = 'index.html'; }, 500);
+                    }
+                } else {
+                    window.AuthManager.createAccount(email, password);
+                    window.AuthManager.authenticate(email, password);
+                    successMessage.textContent = 'Account created! Redirecting...';
+                    successMessage.classList.add('show');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 500);
+                }
+            } catch (err) {
+                errorMessage.textContent = err.message || 'Failed to create account.';
+                errorMessage.classList.add('show');
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.classList.remove('loading');
+            }
+        }
+        
+        async function showForgotPasswordModal() {
+            const email = document.getElementById('email').value.trim() || prompt('Enter your email to reset password:');
+            if (!email) return;
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            successMessage.classList.remove('show');
+            errorMessage.classList.remove('show');
+            try {
+                if (window.SupabaseAuth && window.SupabaseAuth.isConfigured()) {
+                    await window.SupabaseAuth.resetPassword(email);
+                    successMessage.textContent = 'Check your email for a password reset link.';
+                    successMessage.classList.add('show');
+                } else {
+                    errorMessage.textContent = 'Password reset requires backend configuration. Create a new account or contact support.';
+                    errorMessage.classList.add('show');
+                }
+            } catch (err) {
+                errorMessage.textContent = err.message || 'Failed to send reset email.';
+                errorMessage.classList.add('show');
+            }
+        }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AuthManager && window.AuthManager.isAuthenticated()) {
+                window.location.href = 'index.html';
+                return;
+            }
+            initLoginForm();
+        });
+    </script>
+    <link rel="stylesheet" href="site-assistant.css?v=1">
+    <script src="site-assistant.js?v=1" defer></script>
 </body>
 </html>

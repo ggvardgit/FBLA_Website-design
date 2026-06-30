@@ -76,7 +76,7 @@
     <div id="results"></div>
     
     <script src="apush-data.js"></script>
-    <script src="gemini-api.js"></script>
+    <script src="openai-api.js"></script>
     <script src="script.js"></script>
     <script>
         function testFiles() {
@@ -99,11 +99,11 @@
                 checks.push('<div class="test-item fail">❌ APUSH utilities not found</div>');
             }
             
-            // Check GeminiAPI
-            if (typeof GeminiAPI !== 'undefined') {
-                checks.push('<div class="test-item pass">✅ GeminiAPI loaded</div>');
+            // Check OpenAIAPI (server-backed)
+            if (typeof OpenAIAPI !== 'undefined') {
+                checks.push('<div class="test-item pass">✅ OpenAIAPI loaded</div>');
             } else {
-                checks.push('<div class="test-item info">ℹ️ GeminiAPI not loaded (optional)</div>');
+                checks.push('<div class="test-item info">ℹ️ OpenAIAPI not loaded (optional)</div>');
             }
             
             results.innerHTML = checks.join('');
@@ -118,8 +118,7 @@
                 'units.html',
                 'dashboard.html',
                 'schedule.html',
-                'resources.html',
-                'api-config.html'
+                'resources.html'
             ];
             
             const checks = pages.map(page => {
@@ -193,12 +192,7 @@
                     checks.push('<div class="test-item info">ℹ️ No user progress (normal for new users)</div>');
                 }
                 
-                const apiKey = localStorage.getItem('gemini_api_key');
-                if (apiKey) {
-                    checks.push('<div class="test-item info">ℹ️ Gemini API key configured</div>');
-                } else {
-                    checks.push('<div class="test-item info">ℹ️ No API key (will use fallback)</div>');
-                }
+                checks.push('<div class="test-item info">ℹ️ OpenAI runs on the server (OPENAI_API_KEY), not in localStorage</div>');
             } catch (e) {
                 checks.push(`<div class="test-item fail">❌ LocalStorage error: ${e.message}</div>`);
             }
@@ -206,25 +200,35 @@
             results.innerHTML = checks.join('');
         }
         
-        function testAI() {
+        async function testAI() {
             const results = document.getElementById('ai-results');
             results.innerHTML = '<p>Checking AI integration...</p>';
             
             const checks = [];
             
-            if (typeof GeminiAPI === 'undefined') {
-                checks.push('<div class="test-item fail">❌ GeminiAPI not loaded</div>');
+            if (typeof OpenAIAPI === 'undefined') {
+                checks.push('<div class="test-item fail">❌ OpenAIAPI not loaded</div>');
                 results.innerHTML = checks.join('');
                 return;
             }
             
-            checks.push('<div class="test-item pass">✅ GeminiAPI loaded</div>');
+            checks.push('<div class="test-item pass">✅ OpenAIAPI loaded</div>');
             
-            if (GeminiAPI.hasApiKey()) {
-                checks.push('<div class="test-item pass">✅ API key configured</div>');
-                checks.push('<div class="test-item info">ℹ️ AI question generation enabled</div>');
-            } else {
-                checks.push('<div class="test-item info">ℹ️ No API key (will use fallback questions)</div>');
+            try {
+                const r = await fetch('/api/health');
+                const h = await r.json();
+                if (h.ai) {
+                    checks.push('<div class="test-item pass">✅ Server reports OpenAI available</div>');
+                } else {
+                    checks.push('<div class="test-item info">ℹ️ Server running but OPENAI_API_KEY not set (fallback questions only)</div>');
+                }
+            } catch (e) {
+                checks.push('<div class="test-item info">ℹ️ Could not reach /api/health — use python app.py (not file://)</div>');
+            }
+            
+            await OpenAIAPI.refreshAiStatus();
+            if (OpenAIAPI.hasApiKey()) {
+                checks.push('<div class="test-item pass">✅ Client sees server AI as available</div>');
             }
             
             results.innerHTML = checks.join('');

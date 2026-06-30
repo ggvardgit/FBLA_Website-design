@@ -35,7 +35,7 @@ checkFile('APUSH', true); // Main APUSH object
 checkFile('APUSH_DATA', true); // Period data
 
 console.log('\n🤖 Checking AI Integration...');
-checkFile('GeminiAPI', false); // Optional AI features
+checkFile('OpenAIAPI', false); // Optional; server OpenAI via python app.py
 
 console.log('\n📊 Checking Data Structure...');
 if (window.APUSH_DATA) {
@@ -68,12 +68,7 @@ try {
         checks.apis.push('ℹ️  No user progress yet (this is normal for new users)');
     }
     
-    const apiKey = localStorage.getItem('gemini_api_key');
-    if (apiKey) {
-        checks.apis.push('✅ Gemini API key configured');
-    } else {
-        checks.apis.push('ℹ️  No Gemini API key (AI features will use fallback)');
-    }
+    checks.apis.push('ℹ️  OpenAI API key is server-side (OPENAI_API_KEY), not in localStorage');
 } catch (e) {
     checks.errors.push(`❌ LocalStorage error: ${e.message}`);
 }
@@ -121,7 +116,7 @@ console.log('\n' + '='.repeat(50));
 console.log('\n💡 Quick Test Commands:');
 console.log('  - Test navigation: Click through all menu items');
 console.log('  - Test theme: Click theme toggle button');
-console.log('  - Test AI: Go to AI Settings and configure API key');
+console.log('  - Test AI: Run python app.py with OPENAI_API_KEY; Settings → AI shows status');
 console.log('  - Test practice: Go to Units → Select Period → Practice tab');
 console.log('\n📖 See TEST_GUIDE.md for complete testing instructions');
 

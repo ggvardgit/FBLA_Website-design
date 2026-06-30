@@ -3,15 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AP U.S. History Learning Hub - Master all periods and excel on your AP exam">
+    <meta name="description" content="AP U.S. History Learning Hub - an interactive, accessible APUSH study website aligned to FBLA Website Design scoring criteria.">
     <title>APUSH Learning Hub | Home</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=museum1">
+    <link rel="stylesheet" href="tahoe-glass.css?v=1">
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('apush_session')) {
+                    document.documentElement.classList.add('apush-authenticated-boot');
+                }
+            } catch (_) { /* ignore */ }
+        })();
+    </script>
 </head>
-<body>
+<body class="museum-site">
+    <section id="intro-splash" class="intro-splash" aria-labelledby="intro-title">
+        <div id="glsl-hills-root" class="intro-splash__hills" aria-hidden="true"></div>
+        <div class="intro-splash__overlay" aria-hidden="true"></div>
+        <div class="intro-splash__content">
+            <p class="intro-splash__eyebrow">AP U.S. History</p>
+            <h1 id="intro-title" class="intro-splash__title">APUSH HUB</h1>
+            <p class="intro-splash__subtitle">An interactive study platform with period mastery, DBQ tools, live sessions, and evidence-based APUSH resources.</p>
+            <div class="intro-splash__actions">
+                <button type="button" id="intro-sign-in-btn" class="tahoe-glass-btn tahoe-glass-btn--primary intro-splash__cta">
+                    <span class="tahoe-glass-btn__lens" aria-hidden="true"></span>
+                    <span class="tahoe-glass-btn__text">Sign In</span>
+                </button>
+                <button type="button" id="intro-create-account-btn" class="intro-splash__skip">Create account</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="app-shell" class="app-shell app-shell--gated">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <nav class="navbar" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <a href="index.html" class="logo" aria-label="APUSH Learning Hub Home">
-                <span class="logo-text">APUSH Hub</span>
+            <a href="index.html" class="logo" aria-label="APUSH HUB Home">
+                <span class="logo-mark" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19V5l8-3 8 3v14"/><path d="M8 10h8M8 14h5"/></svg>
+                </span>
+                <span class="logo-text">APUSH HUB</span>
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span>
@@ -21,141 +53,486 @@
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link active" aria-current="page">Home</a></li>
                 <li><a href="units.html" class="nav-link">Units</a></li>
-                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
-                <li><a href="schedule.html" class="nav-link">Live Study</a></li>
                 <li><a href="resources.html" class="nav-link">Resources</a></li>
-                <li><a href="api-config.html" class="nav-link">AI Settings</a></li>
+                <li><a href="schedule.html" class="nav-link">Schedule</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
             </ul>
             <div class="nav-controls">
-                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-                    <span class="theme-icon">🌙</span>
-                </button>
-                <button class="motion-toggle" aria-label="Toggle reduced motion" title="Reduce motion">
-                    <span class="motion-icon">⚙️</span>
+                <div data-theme-toggler-root class="theme-toggler-root js-auth-theme-toggle" hidden aria-hidden="true"></div>
+                <button type="button" class="settings-gear-btn" aria-label="Open settings" title="Settings">
+                    <span>⚙️</span>
                 </button>
             </div>
         </div>
     </nav>
 
-    <main class="main-content">
-        <section class="hero" aria-labelledby="hero-heading">
-            <div class="hero-container">
-                <h1 id="hero-heading" class="hero-title">AP U.S. History Study Platform</h1>
-                <p class="hero-subtitle">Study materials and practice questions for all APUSH periods, aligned with College Board standards.</p>
-                
-                <div class="readiness-card">
-                    <div class="readiness-header">
-                        <h2 class="readiness-title">Exam Readiness</h2>
-                        <span class="readiness-percentage" id="readiness-percentage">0%</span>
+    <main id="main-content" class="main-content">
+        <section class="museum-hero" aria-labelledby="hero-heading">
+            <div class="museum-hero__accent soft-accent" aria-hidden="true"></div>
+            <div class="museum-hero__accent museum-hero__accent--gold soft-accent" aria-hidden="true"></div>
+            <div class="container">
+                <div class="museum-hero__content">
+                    <span class="section-label">AP U.S. History Study Platform</span>
+                    <h1 id="hero-heading" class="museum-hero__title display-heading">APUSH HUB</h1>
+                    <p class="museum-hero__subtitle">Master U.S. History through timelines, study units, review tools, and curated resources.</p>
+                    <div class="museum-hero__actions" aria-label="Primary actions">
+                        <a href="units.html" class="museum-button" aria-label="Start studying">Start Studying</a>
+                        <a href="units.html" class="museum-button secondary" aria-label="Explore units">Explore Units</a>
                     </div>
-                    <div class="readiness-bar">
-                        <div class="readiness-progress" id="readiness-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="archive-status-panel reveal">
+                        <div class="readiness-card readiness-card--hero no-liquid-glass">
+                            <div class="readiness-header">
+                                <h2 class="readiness-title" style="font-family:var(--font-display);font-size:1.25rem;">Exam Readiness</h2>
+                                <span class="readiness-percentage" id="readiness-percentage">0%</span>
+                            </div>
+                            <div class="readiness-bar">
+                                <div class="readiness-progress" id="readiness-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="readiness-description">Average mastery across all 8 APUSH periods—each correct practice question adds about 1% to that period.</p>
+                        </div>
+                        <div class="quick-stats quick-stats--hero" aria-label="User progress summary">
+                            <div class="stat-item no-liquid-glass"><span class="stat-value" id="periods-completed">0</span><span class="stat-label">Periods Done</span></div>
+                            <div class="stat-item no-liquid-glass"><span class="stat-value" id="practice-questions">0</span><span class="stat-label">Practice Items</span></div>
+                            <div class="stat-item no-liquid-glass"><span class="stat-value" id="study-hours">0</span><span class="stat-label">Study Hours</span></div>
+                        </div>
                     </div>
-                    <p class="readiness-description">Based on your progress across all periods</p>
                 </div>
+                <div class="museum-hero__visual">
+                    <figure class="image-frame image-frame--hero image-loaded">
+                        <img class="image-frame__img" src="assets/hero-washington-delaware.jpg" alt="Washington Crossing the Delaware — iconic American history painting by Emanuel Leutze" width="960" height="615" loading="eager" decoding="async">
+                        <figcaption class="image-frame__caption">Washington Crossing the Delaware (1851) — Emanuel Leutze, Metropolitan Museum of Art</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
 
-                <div class="action-grid">
-                    <a href="units.html" class="action-card" aria-label="Explore APUSH units">
-                        <h3 class="action-title">Units</h3>
-                        <p class="action-description">Explore all 8 periods from Colonial America to Modern Era</p>
+        <section class="museum-section" aria-labelledby="archive-heading">
+            <div class="container" style="text-align:center;">
+                <span class="section-label reveal">Welcome</span>
+                <h2 id="archive-heading" class="display-heading reveal" style="font-size:clamp(2rem,5vw,3.25rem);margin-bottom:var(--spacing-lg);">The APUSH Archive</h2>
+                <p class="section-intro reveal" style="margin:0 auto var(--spacing-2xl);">A digital study hall inspired by national archives and museum exhibits—organized periods, measurable progress, and evidence-based review.</p>
+                <div class="archive-plaque-grid reveal-stagger">
+                    <article class="archive-plaque reveal">
+                        <div class="archive-plaque__icon" aria-hidden="true">I</div>
+                        <h3>Study the Units</h3>
+                        <p>Move through APUSH Periods 1–8 with organized review sections, timelines, and concept maps.</p>
+                    </article>
+                    <article class="archive-plaque reveal">
+                        <div class="archive-plaque__icon" aria-hidden="true">II</div>
+                        <h3>Track Your Progress</h3>
+                        <p>See what you have completed and what still needs review in your personal study archive.</p>
+                    </article>
+                    <article class="archive-plaque reveal">
+                        <div class="archive-plaque__icon" aria-hidden="true">III</div>
+                        <h3>Review Key Events</h3>
+                        <p>Use timelines, resources, and writing tools to connect major themes across American history.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="museum-section" aria-labelledby="periods-heading" style="background:var(--bg-soft);">
+            <div class="container">
+                <div style="text-align:center;">
+                    <span class="section-label reveal">Curriculum</span>
+                    <h2 id="periods-heading" class="display-heading reveal" style="font-size:clamp(2rem,5vw,3rem);">Explore the Periods</h2>
+                    <p class="section-intro reveal" style="margin:0 auto var(--spacing-2xl);">Eight exhibit-style units aligned to the AP U.S. History course framework.</p>
+                </div>
+                <div class="exhibit-grid exhibit-grid--periods reveal-stagger" id="home-periods-grid">
+                    <a href="unit-study.html?period=1" class="archive-card unit-card unit-card--image-first reveal" style="--period-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Jamestown_Settlement_recreated.jpg/640px-Jamestown_Settlement_recreated.jpg')">
+                        <div class="unit-card__media" role="img" aria-label="Colonial settlement"></div>
+                        <div class="unit-card__body">
+                            <span class="unit-card__badge">Foundations</span>
+                            <span class="unit-card__period">Period 1</span>
+                            <h3 class="unit-card__title">Colonial America</h3>
+                            <p class="unit-card__dates">1607–1754</p>
+                            <p class="unit-card__desc">Contact, colonization, and regional development in North America.</p>
+                            <span class="unit-card__cta">View Unit</span>
+                        </div>
                     </a>
-                    <a href="dashboard.html" class="action-card" aria-label="View your dashboard">
-                        <h3 class="action-title">Dashboard</h3>
-                        <p class="action-description">Track your progress and identify areas for improvement</p>
+                    <a href="unit-study.html?period=2" class="archive-card unit-card unit-card--image-first reveal" style="--period-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Declaration_of_Independence_%281819%29%2C_by_John_Trumbull.jpg/640px-Declaration_of_Independence_%281819%29%2C_by_John_Trumbull.jpg')">
+                        <div class="unit-card__media" role="img" aria-label="Declaration of Independence painting"></div>
+                        <div class="unit-card__body">
+                            <span class="unit-card__badge">Revolution</span>
+                            <span class="unit-card__period">Period 2</span>
+                            <h3 class="unit-card__title">Revolution &amp; Republic</h3>
+                            <p class="unit-card__dates">1754–1800</p>
+                            <p class="unit-card__desc">Imperial crisis, independence, and the new nation.</p>
+                            <span class="unit-card__cta">View Unit</span>
+                        </div>
                     </a>
-                    <a href="schedule.html" class="action-card" aria-label="Join live study sessions">
-                        <h3 class="action-title">Live Study</h3>
-                        <p class="action-description">Join scheduled study sessions and review topics</p>
+                    <a href="unit-study.html?period=3" class="archive-card unit-card unit-card--image-first reveal" style="--period-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Westward_the_Course_of_Empire_Takes_Its_Way.jpg/640px-Westward_the_Course_of_Empire_Takes_Its_Way.jpg')">
+                        <div class="unit-card__media" role="img" aria-label="Westward expansion painting"></div>
+                        <div class="unit-card__body">
+                            <span class="unit-card__badge">Early Republic</span>
+                            <span class="unit-card__period">Period 3</span>
+                            <h3 class="unit-card__title">Expansion &amp; Reform</h3>
+                            <p class="unit-card__dates">1800–1848</p>
+                            <p class="unit-card__desc">Market revolution, democracy, and territorial growth.</p>
+                            <span class="unit-card__cta">View Unit</span>
+                        </div>
                     </a>
-                    <a href="resources.html" class="action-card" aria-label="Access study resources">
-                        <h3 class="action-title">Resources</h3>
-                        <p class="action-description">DBQ tools, practice questions, and study materials</p>
+                    <a href="unit-study.html?period=4" class="archive-card unit-card unit-card--image-first reveal" style="--period-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/African-American_freedmen_and_soldiers.jpg/640px-African-American_freedmen_and_soldiers.jpg')">
+                        <div class="unit-card__media" role="img" aria-label="Civil War era photograph"></div>
+                        <div class="unit-card__body">
+                            <span class="unit-card__badge">Sectionalism</span>
+                            <span class="unit-card__period">Period 4</span>
+                            <h3 class="unit-card__title">Crisis &amp; Civil War</h3>
+                            <p class="unit-card__dates">1844–1877</p>
+                            <p class="unit-card__desc">Slavery, secession, war, and Reconstruction.</p>
+                            <span class="unit-card__cta">View Unit</span>
+                        </div>
+                    </a>
+                    <a href="unit-study.html?period=5" class="archive-card unit-card unit-card--image-first reveal" style="--period-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Union_Pacific_619.jpg/640px-Union_Pacific_619.jpg')">
+                        <div class="unit-card__media" role="img" aria-label="Industrial railroad"></div>
+                        <div class="unit-card__body">
+                            <span class="unit-card__badge">Industrialization</span>
+                            <span class="unit-card__period">Period 5</span>
+                            <h3 class="unit-card__title">Gilded Age</h3>
+                            <p class="unit-card__dates">1865–1898</p>
+                            <p class="unit-card__desc">Industrial growth, labor, and the closing frontier.</p>
+                            <span class="unit-card__cta">View Unit</span>
+                        </div>
+                    </a>
+                    <a href="unit-study.html?period=6" class="archive-card unit-card unit-card--image-first reveal" style="--period-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Into_the_Jaws_of_Death_23-0455M_edit.jpg/640px-Into_the_Jaws_of_Death_23-0455M_edit.jpg')">
+                        <div class="unit-card__media" role="img" aria-label="World War II landing"></div>
+                        <div class="unit-card__body">
+                            <span class="unit-card__badge">Global Conflict</span>
+                            <span class="unit-card__period">Period 6</span>
+                            <h3 class="unit-card__title">Modern America Emerges</h3>
+                            <p class="unit-card__dates">1890–1945</p>
+                            <p class="unit-card__desc">Progressivism, world wars, and the Great Depression.</p>
+                            <span class="unit-card__cta">View Unit</span>
+                        </div>
+                    </a>
+                    <a href="unit-study.html?period=7" class="archive-card unit-card unit-card--image-first reveal" style="--period-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Martin_Luther_King_Jr_National_Historic_Site_%28cropped%29.jpg/640px-Martin_Luther_King_Jr_National_Historic_Site_%28cropped%29.jpg')">
+                        <div class="unit-card__media" role="img" aria-label="Civil rights era"></div>
+                        <div class="unit-card__body">
+                            <span class="unit-card__badge">Cold War</span>
+                            <span class="unit-card__period">Period 7</span>
+                            <h3 class="unit-card__title">Postwar America</h3>
+                            <p class="unit-card__dates">1945–1980</p>
+                            <p class="unit-card__desc">Cold War, rights movements, and social change.</p>
+                            <span class="unit-card__cta">View Unit</span>
+                        </div>
+                    </a>
+                    <a href="unit-study.html?period=8" class="archive-card unit-card unit-card--image-first reveal" style="--period-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Statue_of_Liberty_2021.jpg/640px-Statue_of_Liberty_2021.jpg')">
+                        <div class="unit-card__media" role="img" aria-label="Statue of Liberty"></div>
+                        <div class="unit-card__body">
+                            <span class="unit-card__badge">Modern America</span>
+                            <span class="unit-card__period">Period 8</span>
+                            <h3 class="unit-card__title">Contemporary U.S.</h3>
+                            <p class="unit-card__dates">1980–Present</p>
+                            <p class="unit-card__desc">Conservatism, globalization, and twenty-first century challenges.</p>
+                            <span class="unit-card__cta">View Unit</span>
+                        </div>
                     </a>
                 </div>
+            </div>
+        </section>
 
-                <div class="quick-stats">
-                    <div class="stat-item">
-                        <span class="stat-value" id="periods-completed">0</span>
-                        <span class="stat-label">Periods Completed</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="practice-questions">0</span>
-                        <span class="stat-label">Practice Questions</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="study-hours">0</span>
-                        <span class="stat-label">Study Hours</span>
+        <section class="museum-section history-timeline-section" aria-labelledby="timeline-heading">
+            <div class="container">
+                <header class="history-timeline__header">
+                    <span class="section-label reveal">Chronology</span>
+                    <h2 id="timeline-heading" class="display-heading reveal history-timeline__title">Timeline of American History</h2>
+                    <p class="history-timeline__subtitle reveal">A concise path through the major turning points that shaped the United States—from early societies to the modern era.</p>
+                </header>
+
+                <div class="history-timeline timeline-section reveal-stagger" role="list">
+                    <div class="history-timeline__rail" aria-hidden="true"></div>
+
+                    <article class="history-timeline__event history-timeline__event--left reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1491</p>
+                                <p class="history-timeline__text">Native societies flourish before sustained European contact.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--right reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1607</p>
+                                <p class="history-timeline__text">Jamestown founded—first permanent English settlement in North America.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--left reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1776</p>
+                                <p class="history-timeline__text">Declaration of Independence articulates revolutionary ideals.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--right reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1787</p>
+                                <p class="history-timeline__text">Constitution drafted; federal system established.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--left reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1803</p>
+                                <p class="history-timeline__text">Louisiana Purchase doubles the nation's territory.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--right reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1861–1865</p>
+                                <p class="history-timeline__text">Civil War tests union and ends slavery.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--left reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1865–1877</p>
+                                <p class="history-timeline__text">Reconstruction redefines citizenship and federal power.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--right reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1890s</p>
+                                <p class="history-timeline__text">Gilded Age industrialization transforms economy and labor.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--left reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1917</p>
+                                <p class="history-timeline__text">United States enters World War I.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--right reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1929</p>
+                                <p class="history-timeline__text">Great Depression begins; New Deal follows.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--left reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1941</p>
+                                <p class="history-timeline__text">Entry into World War II reshapes global role.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--right reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1947–1991</p>
+                                <p class="history-timeline__text">Cold War defines foreign and domestic policy.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--left reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">1950s–1960s</p>
+                                <p class="history-timeline__text">Civil Rights Movement expands American democracy.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="history-timeline__event history-timeline__event--right reveal" role="listitem">
+                        <div class="history-timeline__card">
+                            <span class="history-timeline__icon" aria-hidden="true"></span>
+                            <div class="history-timeline__content">
+                                <p class="history-timeline__date">2001–Present</p>
+                                <p class="history-timeline__text">Modern America: security, technology, and polarization.</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="museum-section" aria-labelledby="tools-heading" style="background:var(--bg-soft);">
+            <div class="container">
+                <div style="text-align:center;">
+                    <span class="section-label reveal">Review</span>
+                    <h2 id="tools-heading" class="display-heading reveal" style="font-size:clamp(2rem,5vw,3rem);">Featured Review Tools</h2>
+                </div>
+                <div class="exhibit-grid reveal-stagger" style="margin-top:var(--spacing-2xl);">
+                    <a href="units.html" class="archive-card action-card reveal"><h3 class="action-title">Unit Guides</h3><p class="action-description">Period overviews, people, events, and vocabulary.</p></a>
+                    <a href="resources.html" class="archive-card action-card reveal"><h3 class="action-title">Practice Questions</h3><p class="action-description">MCQ, SAQ, and period-filtered drills.</p></a>
+                    <a href="unit-study.html?period=1" class="archive-card action-card reveal"><h3 class="action-title">Key Terms</h3><p class="action-description">Concept vocabulary inside each unit exhibit.</p></a>
+                    <a href="index.html#timeline-heading" class="archive-card action-card reveal"><h3 class="action-title">Timeline Review</h3><p class="action-description">Chronological markers across the full course.</p></a>
+                    <a href="resources.html" class="archive-card action-card reveal"><h3 class="action-title">DBQ / LEQ / SAQ Help</h3><p class="action-description">Writing tools and pre-built question bank.</p></a>
+                    <a href="dashboard.html" class="archive-card action-card reveal"><h3 class="action-title">Exam Strategy</h3><p class="action-description">Track readiness and focus your next review.</p></a>
+                </div>
+            </div>
+        </section>
+
+        <section class="museum-cta reveal" aria-labelledby="cta-heading">
+            <h2 id="cta-heading" class="display-heading">Begin Your Review Journey</h2>
+            <p>Build your understanding of U.S. history one period, document, and theme at a time.</p>
+            <a href="dashboard.html" class="museum-button">Go to Dashboard</a>
+        </section>
+
+        <section class="metrics-lab-section museum-section" aria-labelledby="metrics-heading">
+            <div class="container">
+                <span class="section-label reveal">Analytics</span>
+                <h2 id="metrics-heading" class="section-title display-heading reveal">Success Metrics Lab</h2>
+                <p class="section-intro">Adjust assumptions to model likely learning outcomes using engagement and performance inputs.</p>
+                <div class="metrics-lab-grid">
+                    <form class="metrics-form" aria-label="Metrics simulator controls">
+                        <label for="hours-input">Weekly Study Hours</label>
+                        <input id="hours-input" type="range" min="1" max="15" value="6">
+                        <p class="metrics-value"><span id="hours-output">6</span> hrs/week</p>
+
+                        <label for="accuracy-input">Practice Accuracy</label>
+                        <input id="accuracy-input" type="range" min="40" max="100" value="78">
+                        <p class="metrics-value"><span id="accuracy-output">78</span>%</p>
+
+                        <label for="engagement-input">Session Attendance</label>
+                        <input id="engagement-input" type="range" min="0" max="100" value="65">
+                        <p class="metrics-value"><span id="engagement-output">65</span>%</p>
+                    </form>
+
+                    <div class="metrics-results" aria-live="polite">
+                        <h3 class="metrics-title">Projected 30-Day Outcomes</h3>
+                        <div class="metrics-result-row">
+                            <span>Projected Readiness</span>
+                            <strong id="projected-score">81%</strong>
+                        </div>
+                        <div class="metrics-result-row">
+                            <span>Retention Streak Probability</span>
+                            <strong id="metric-streak">72%</strong>
+                        </div>
+                        <div class="metrics-result-row">
+                            <span>Unit Completion Rate</span>
+                            <strong id="metric-completion">68%</strong>
+                        </div>
+                        <div class="metrics-result-row">
+                            <span>Live Session Conversion</span>
+                            <strong id="metric-attendance">61%</strong>
+                        </div>
+                        <p id="projected-note" class="metrics-note">Strong trajectory. Increase weekly hours by 1-2 to push readiness above 85%.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="features" aria-labelledby="features-heading">
+        <section class="challenge-section museum-section" aria-labelledby="challenge-heading">
             <div class="container">
-                <h2 id="features-heading" class="section-title">Study Resources</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <h3 class="feature-title">AP-Aligned Content</h3>
-                        <p class="feature-text">All content organized by College Board periods with official themes and skills</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3 class="feature-title">Adaptive Learning</h3>
-                        <p class="feature-text">Personalized study paths based on your quiz performance and mastery levels</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3 class="feature-title">Practice Questions</h3>
-                        <p class="feature-text">SAQ, DBQ, and LEQ practice with instant feedback aligned to College Board rubrics</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3 class="feature-title">Progress Tracking</h3>
-                        <p class="feature-text">Monitor your mastery across all periods and identify weakest themes</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3 class="feature-title">AI-Generated Questions</h3>
-                        <p class="feature-text">Get unlimited practice questions powered by Gemini AI, tailored to each period</p>
-                    </div>
+                <span class="section-label reveal">Practice</span>
+                <h2 id="challenge-heading" class="section-title display-heading reveal">Daily History Challenge</h2>
+                <p class="section-intro">Use this quick prompt generator to keep practice varied and engaging.</p>
+                <div class="challenge-card">
+                    <button id="generate-focus-btn" class="submit-btn" type="button">Generate Challenge</button>
+                    <p id="focus-challenge" class="challenge-output">Click the button to generate a new SAQ/DBQ/LEQ micro-challenge.</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="footer" role="contentinfo">
+    <footer class="footer site-footer-citations" role="contentinfo">
         <div class="container">
-            <p>&copy; 2024 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
+            <h2 id="sources-heading" class="site-footer-citations__title">Sources &amp; Citations</h2>
+            <p class="site-footer-citations__intro">Content and pedagogy align with these professional APUSH resources.</p>
+            <div class="sources-categories">
+                <div class="sources-category">
+                    <h3 class="sources-category-title">Official & Framework</h3>
+                    <ul class="sources-list">
+                        <li><a href="https://apcentral.collegeboard.org/courses/ap-united-states-history" target="_blank" rel="noopener noreferrer">College Board AP Central</a> — Course framework, rubrics, exam structure</li>
+                        <li><a href="https://apstudents.collegeboard.org/courses/ap-united-states-history" target="_blank" rel="noopener noreferrer">AP Students — U.S. History</a> — Exam info and sample questions</li>
+                    </ul>
+                </div>
+                <div class="sources-category">
+                    <h3 class="sources-category-title">Primary Sources & Archives</h3>
+                    <ul class="sources-list">
+                        <li><a href="https://www.archives.gov/education" target="_blank" rel="noopener noreferrer">U.S. National Archives</a> — Document analysis and educator lessons</li>
+                        <li><a href="https://www.loc.gov/education" target="_blank" rel="noopener noreferrer">Library of Congress</a> — Maps, manuscripts, photographs</li>
+                        <li><a href="https://avalon.law.yale.edu" target="_blank" rel="noopener noreferrer">Avalon Project</a> — Documents in law, history, diplomacy</li>
+                    </ul>
+                </div>
+                <div class="sources-category">
+                    <h3 class="sources-category-title">Synthesis & Textbooks</h3>
+                    <ul class="sources-list">
+                        <li><a href="https://www.americanyawp.com" target="_blank" rel="noopener noreferrer">The American Yawp</a> — Open-source U.S. history textbook</li>
+                        <li><a href="https://www.khanacademy.org/humanities/ap-us-history" target="_blank" rel="noopener noreferrer">Khan Academy APUSH</a> — Period overviews and practice</li>
+                    </ul>
+                </div>
+                <div class="sources-category">
+                    <h3 class="sources-category-title">Teaching & Enrichment</h3>
+                    <ul class="sources-list">
+                        <li><a href="https://www.gilderlehrman.org" target="_blank" rel="noopener noreferrer">Gilder Lehrman Institute</a> — Primary sources and teacher seminars</li>
+                        <li><a href="https://www.digitalhistory.uh.edu" target="_blank" rel="noopener noreferrer">Digital History</a> — Multimedia timelines and exhibits</li>
+                        <li><a href="https://www.facinghistory.org" target="_blank" rel="noopener noreferrer">Facing History</a> — Civic and historical inquiry</li>
+                    </ul>
+                </div>
+            </div>
+            <p>&copy; 2026 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
         </div>
     </footer>
+    </div><!-- #app-shell -->
+
+    <svg class="glass-filter-defs" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="container-glass" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="1" seed="1" result="turbulence"/>
+                <feGaussianBlur in="turbulence" stdDeviation="2" result="blurredNoise"/>
+                <feDisplacementMap in="SourceGraphic" in2="blurredNoise" scale="40" xChannelSelector="R" yChannelSelector="B" result="displaced"/>
+                <feGaussianBlur in="displaced" stdDeviation="3" result="finalBlur"/>
+                <feComposite in="finalBlur" in2="finalBlur" operator="over"/>
+            </filter>
+        </defs>
+    </svg>
 
     <script src="user-session.js"></script>
-    <script src="gemini-api.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+        }
+    }
+    </script>
+    <script type="module" src="intro-splash.js"></script>
+    <script type="module" src="tahoe-glass.js"></script>
+    <script src="openai-api.js"></script>
     <script src="script.js"></script>
+    <script src="theme-toggler.js"></script>
+    <script src="settings-modal.js"></script>
+    <script src="museum-reveal.js?v=2" defer></script>
     <script src="home.js"></script>
 </body>
 </html>
-
-<section class="sources-section" aria-labelledby="sources-heading">
-    <div class="container">
-        <h2 id="sources-heading" class="section-title">Academic Sources</h2>
-        <div class="sources-grid">
-            <div class="source-card">
-                <h3 class="source-title">College Board</h3>
-                <p class="source-text">Official AP U.S. History Course and Exam Description (CED) standards and rubrics.</p>
-                <a href="https://apcentral.collegeboard.org/courses/ap-united-states-history" target="_blank" class="source-link">Visit AP Central →</a>
-            </div>
-            <div class="source-card">
-                <h3 class="source-title">National Archives</h3>
-                <p class="source-text">Primary source documents and digital collections for historical analysis and research.</p>
-                <a href="https://www.archives.gov/education/lessons" target="_blank" class="source-link">Explore Archives →</a>
-            </div>
-            <div class="source-card">
-                <h3 class="source-title">Library of Congress</h3>
-                <p class="source-text">Extensive digital archives of American history, including maps, photos, and manuscripts.</p>
-                <a href="https://www.loc.gov/education/" target="_blank" class="source-link">View Collections →</a>
-            </div>
-            <div class="source-card">
-                <h3 class="source-title">American Yawp</h3>
-                <p class="source-text">A free, open-source American history textbook collaboratively built by historians.</p>
-                <a href="https://www.americanyawp.com/" target="_blank" class="source-link">Read Textbook →</a>
-            </div>
-        </div>
-    </div>
-</section>

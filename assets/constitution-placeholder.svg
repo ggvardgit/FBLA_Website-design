@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-label="United States Constitution first page illustration">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3e8cf"/>
+      <stop offset="100%" stop-color="#e7d9b6"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1200" fill="#d6ccb6"/>
+  <rect x="72" y="72" width="756" height="1056" rx="16" fill="url(#paper)" stroke="#b19862" stroke-width="8"/>
+  <text x="450" y="190" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#2a2a2a">We the People</text>
+  <text x="450" y="240" text-anchor="middle" font-family="Georgia, serif" font-size="23" fill="#2a2a2a">of the United States</text>
+  <g fill="#5c4f33" opacity="0.78" font-family="Georgia, serif" font-size="18">
+    <text x="118" y="320">in Order to form a more perfect Union, establish Justice, insure</text>
+    <text x="118" y="356">domestic Tranquility, provide for the common defence, promote</text>
+    <text x="118" y="392">the general Welfare, and secure the Blessings of Liberty to</text>
+    <text x="118" y="428">ourselves and our Posterity, do ordain and establish this</text>
+    <text x="118" y="464">Constitution for the United States of America.</text>
+    <text x="118" y="540">Article. I.</text>
+    <text x="118" y="576">Section. 1. All legislative Powers herein granted shall be vested</text>
+    <text x="118" y="612">in a Congress of the United States, which shall consist of a</text>
+    <text x="118" y="648">Senate and House of Representatives.</text>
+    <text x="118" y="724">Section. 2. The House of Representatives shall be composed of</text>
+    <text x="118" y="760">Members chosen every second Year by the People of the several</text>
+    <text x="118" y="796">States...</text>
+  </g>
+  <path d="M120 1010 C245 960, 355 1058, 468 1004 S700 988, 792 1044" fill="none" stroke="#3f2f1e" stroke-width="4" opacity="0.6"/>
+</svg>

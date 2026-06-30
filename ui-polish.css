@@ -1,0 +1,635 @@
+/* Sitewide UI polish — spacing, borders, contrast, transitions */
+
+.hidden {
+  display: none !important;
+}
+
+/* —— Remove decorative top/bottom divider lines —— */
+.page-hero,
+.museum-site .dashboard-header,
+.museum-site .units-header,
+.museum-site .resources-header,
+.museum-site .schedule-header,
+.museum-site .unit-study-header {
+  border-bottom: none !important;
+}
+
+.portfolio-section--saq,
+.portfolio-section--dbq,
+.portfolio-section--mcq,
+.portfolio-section--guide,
+.qb-card--dbq,
+.qb-card--leq,
+.qb-card--saq,
+.qb-card--sup {
+  border-top: none !important;
+}
+
+.sources-section {
+  border-top: none !important;
+}
+
+.calendar-container {
+  border-top: none !important;
+}
+
+/* —— Hero button hover: keep label visible, subtle shift —— */
+.museum-button:hover,
+.museum-site .submit-btn:hover,
+.museum-site .btn-primary:not(.login-card .btn-primary):hover {
+  color: var(--text-inverse) !important;
+  background: color-mix(in srgb, var(--navy) 88%, var(--gold)) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.museum-button.secondary:hover {
+  color: var(--navy) !important;
+  background: var(--bg-soft) !important;
+}
+
+/* —— Exam readiness numerals —— */
+.museum-site .readiness-percentage,
+.museum-site .quick-stats--hero .stat-value {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  transition: color var(--transition), opacity var(--transition);
+}
+
+.museum-site .readiness-percentage {
+  -webkit-text-fill-color: unset;
+  background: none;
+  color: var(--burgundy);
+}
+
+/* —— Archive status panel: unified glass + internal dividers —— */
+.archive-status-panel {
+  transition: background-color var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.archive-status-panel.liquid-glass {
+  background: var(--liquid-glass-bg) !important;
+  border-color: var(--liquid-glass-border) !important;
+}
+
+.archive-status-panel.liquid-glass .readiness-card--hero,
+.archive-status-panel.liquid-glass .quick-stats--hero .stat-item {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.archive-status-panel .readiness-card--hero {
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.archive-status-panel .quick-stats--hero {
+  padding-top: var(--spacing-sm);
+}
+
+.archive-status-panel .readiness-bar,
+.archive-status-panel .readiness-progress,
+.archive-status-panel .stat-item {
+  transition: background-color var(--transition), width var(--transition-slow), border-color var(--transition);
+}
+
+/* —— Nav active state contrast —— */
+.museum-site .nav-link.active {
+  color: var(--burgundy);
+  background: color-mix(in srgb, var(--burgundy) 10%, var(--card));
+  font-weight: 600;
+}
+
+.museum-site .nav-link:hover {
+  color: var(--navy);
+  background: color-mix(in srgb, var(--navy) 6%, var(--card));
+}
+
+/* —— Homepage period cards (light mode hover) —— */
+html:not([data-theme="dark"]):not(.dark) .unit-card--image-first:hover {
+  border-color: color-mix(in srgb, var(--gold) 50%, var(--border));
+}
+
+html:not([data-theme="dark"]):not(.dark) .unit-card--image-first:hover .unit-card__body {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(243, 232, 210, 0.92) 32%,
+    rgba(220, 200, 168, 0.98) 100%
+  );
+  color: var(--navy);
+  transition: background var(--transition);
+}
+
+/* —— Units grid cards —— */
+.museum-site .units-grid .unit-card {
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background-color var(--transition);
+}
+
+.museum-site .units-grid .unit-card:hover,
+.museum-site .units-grid .unit-card:focus {
+  background: var(--card) !important;
+  border-color: color-mix(in srgb, var(--burgundy) 32%, var(--border)) !important;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.museum-site .units-grid .unit-card:hover .unit-card-title,
+.museum-site .units-grid .unit-card:hover .unit-card-dates,
+.museum-site .units-grid .unit-card:hover .unit-card-meta,
+.museum-site .units-grid .unit-card:hover .unit-card-skills p {
+  color: var(--text) !important;
+}
+
+.museum-site .units-grid .unit-card.liquid-glass:hover {
+  background: var(--liquid-glass-bg) !important;
+}
+
+.museum-site .units-grid .theme-tag {
+  background: color-mix(in srgb, var(--bg-soft) 75%, var(--card));
+  color: var(--navy);
+  border: 1px solid var(--border);
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.museum-site .units-grid-section {
+  padding-top: var(--spacing-xl);
+}
+
+/* —— Resources —— */
+.resource-card-featured {
+  border-width: 1px;
+}
+
+.resource-card-featured:hover,
+.resource-card-featured:focus {
+  transform: none !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.resource-tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.resource-type,
+.resource-featured-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.2rem 0.55rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 999px;
+}
+
+.resource-type {
+  margin-bottom: 0;
+}
+
+.resource-featured-badge {
+  margin-left: 0;
+}
+
+.resource-card:hover .resource-type {
+  transform: none;
+  box-shadow: none;
+}
+
+.qb-tab,
+.question-bank__tabs > button.qb-tab,
+.question-bank__tablist > button.qb-tab {
+  border-radius: 12px;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.metrics-form,
+.metrics-results,
+.challenge-card {
+  border-radius: var(--radius);
+  transition: background-color var(--transition), border-color var(--transition);
+}
+
+/* —— Schedule calendar —— */
+.calendar-day {
+  border-radius: 12px;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+  min-height: 5.5rem;
+  aspect-ratio: auto;
+}
+
+.calendar-day.has-session {
+  background: color-mix(in srgb, var(--primary-color) 14%, var(--bg-primary));
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--primary-color) 38%, var(--border-color));
+}
+
+.calendar-day.has-session:hover,
+.calendar-day.has-session:focus {
+  background: color-mix(in srgb, var(--primary-color) 22%, var(--bg-primary));
+  color: var(--text-primary);
+}
+
+.calendar-day .day-number {
+  font-weight: 700;
+}
+
+.session-indicator {
+  font-size: 0.68rem;
+  line-height: 1.35;
+  border-radius: 8px;
+  padding: 0.2rem 0.35rem;
+  margin-top: 0.25rem;
+  background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+  color: var(--text-primary);
+}
+
+.session-indicator span,
+.session-time-chip {
+  display: block;
+  border-radius: 6px;
+}
+
+.session-count {
+  font-size: 0.65rem;
+  opacity: 0.9;
+  margin-top: 0.15rem;
+}
+
+.add-session-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.add-session-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-md);
+  align-items: end;
+}
+
+.add-session-form label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--text-muted);
+}
+
+.add-session-form input,
+.add-session-form select {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* —— Dashboard uniform cards —— */
+.museum-site .dashboard-card {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: var(--spacing-xl) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.museum-site .dashboard-card .card-title {
+  font-family: var(--font-display);
+  color: var(--navy);
+  font-size: 1.35rem;
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.museum-site .dashboard-card .detail-label,
+.museum-site .dashboard-card .detail-value,
+.museum-site .dashboard-card .recommendation-text,
+.museum-site .dashboard-card .activity-item,
+.museum-site .dashboard-card .mastery-item-label,
+.museum-site .dashboard-card .weakness-item {
+  color: var(--text);
+}
+
+.museum-site .stat-circle-label,
+.museum-site .dashboard-card .text-secondary {
+  color: var(--text-muted);
+}
+
+/* —— Citations footer —— */
+.site-footer-citations {
+  border-top: 1px solid var(--border);
+  background: var(--bg-soft);
+  padding: var(--spacing-2xl) 0 var(--spacing-xl);
+  margin-top: var(--spacing-2xl);
+}
+
+.site-footer-citations__title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--navy);
+  margin: 0 0 var(--spacing-md);
+  text-align: center;
+}
+
+.site-footer-citations__intro {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0 auto var(--spacing-xl);
+  max-width: 40rem;
+}
+
+.site-footer-citations .sources-categories {
+  margin-bottom: var(--spacing-xl);
+}
+
+.site-footer-citations .sources-category {
+  background: var(--card);
+}
+
+/* —— Settings modal: sidebar tabs, solid panel (no glass) —— */
+.settings-modal-content {
+  max-width: 760px;
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-lg) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.settings-modal-content.liquid-glass::before,
+.settings-modal-content.liquid-glass::after {
+  display: none !important;
+}
+
+.settings-modal-sidebar {
+  min-width: 11.5rem;
+  flex-shrink: 0;
+}
+
+.settings-tab-btn {
+  font-weight: 500;
+  border-radius: 10px;
+}
+
+.settings-tab-btn.active {
+  background: var(--navy);
+  color: var(--text-inverse);
+}
+
+.settings-panel h3 {
+  font-family: var(--font-display);
+  color: var(--navy);
+  margin: 0 0 var(--spacing-xs);
+}
+
+.settings-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+}
+
+.settings-segment-btn {
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.settings-segment-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.settings-segment-btn.active {
+  background: var(--navy);
+  color: var(--text-inverse);
+}
+
+.setting-item--stacked {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.setting-item--stacked .setting-label {
+  margin-bottom: var(--spacing-sm);
+}
+
+.setting-title {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.setting-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.15rem;
+}
+
+.account-email {
+  font-size: 1rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.last-login {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+#panel-account .password-form {
+  margin: 0 0 var(--spacing-md);
+}
+
+.btn-secondary,
+.btn-danger,
+.museum-site .btn-primary:not(.login-card .btn-primary),
+#modal-save-password-btn {
+  border-radius: 999px;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
+}
+
+.btn-secondary {
+  background: var(--bg-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--navy) 25%, var(--border));
+}
+
+.btn-danger {
+  background: var(--error-color, #dc2626);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-danger--outline {
+  background: transparent;
+  color: var(--error-color, #dc2626);
+  border: 1px solid color-mix(in srgb, var(--error-color, #dc2626) 55%, var(--border));
+}
+
+.btn-danger--outline:hover {
+  background: color-mix(in srgb, var(--error-color, #dc2626) 10%, var(--card));
+}
+
+.setting-item--danger {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid color-mix(in srgb, var(--error-color, #dc2626) 25%, var(--border));
+}
+
+.password-form {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.password-form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.password-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+}
+
+.password-form-input {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.password-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.password-message {
+  display: none;
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 10px;
+  font-size: 0.875rem;
+}
+
+.password-message.show {
+  display: block;
+}
+
+.password-message.success {
+  background: color-mix(in srgb, var(--success-color) 12%, transparent);
+  color: var(--success-color);
+}
+
+.password-message.error {
+  background: color-mix(in srgb, var(--error-color, #dc2626) 12%, transparent);
+  color: var(--error-color, #dc2626);
+}
+
+.setting-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-color) 60%, transparent);
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .settings-modal-body {
+    flex-direction: column;
+  }
+
+  .settings-modal-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
+/* —— Global text contrast —— */
+.museum-site .nav-link {
+  color: var(--text-secondary);
+}
+
+.museum-site .section-intro,
+.museum-site .page-subtitle,
+.museum-site .hero-subtitle,
+.museum-site .history-timeline__subtitle,
+.museum-site .site-footer-citations__intro,
+.museum-site label,
+.museum-site .form-label,
+.museum-site .setting-description,
+.museum-site .settings-panel > p,
+.museum-site .text-muted,
+.museum-site .text-secondary {
+  color: var(--text-secondary);
+}
+
+.museum-site p,
+.museum-site .card-text,
+.museum-site .resource-description,
+.museum-site .unit-description,
+.museum-site .dashboard-card p {
+  color: var(--text);
+}
+
+.intro-splash__skip,
+button.intro-splash__skip {
+  color: var(--text-secondary);
+}
