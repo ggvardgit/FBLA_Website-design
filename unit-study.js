@@ -9,6 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let currentPeriod = null;
+let mcqDisplayNumber = 1;
+
+function resetMcqCounter() {
+    mcqDisplayNumber = 1;
+}
+
+function trackUnitMetric(updateFn) {
+    const isAuth = window.AuthManager && typeof window.AuthManager.isAuthenticated === 'function' && window.AuthManager.isAuthenticated();
+    if (!isAuth || typeof APUSH === 'undefined' || !APUSH.getUserProgress || !APUSH.saveUserProgress) return;
+    const progress = APUSH.getUserProgress();
+    if (!progress.metrics) progress.metrics = {};
+    updateFn(progress.metrics);
+    APUSH.saveUserProgress(progress);
+}
 
 function loadPeriod(periodNumber) {
     if (!window.APUSH_DATA || !APUSH_DATA.periods[periodNumber]) {
@@ -18,6 +32,7 @@ function loadPeriod(periodNumber) {
     }
     
     currentPeriod = APUSH_DATA.periods[periodNumber];
+    resetMcqCounter();
     
     // Update page header
     document.getElementById('period-number').textContent = periodNumber;
@@ -265,13 +280,14 @@ function setupPracticeQuestions() {
             btn.classList.add('active');
             
             const type = btn.dataset.type;
+            if (type === 'mcq') resetMcqCounter();
             loadPracticeQuestions(type);
         });
     });
     
-    // Load SAQ by default
+    // Load MCQ by default
     if (practiceTypeBtns.length > 0) {
-        loadPracticeQuestions('saq');
+        loadPracticeQuestions('mcq');
     }
 }
 
@@ -284,8 +300,8 @@ async function loadPracticeQuestions(type) {
         <div style="text-align: center; padding: var(--spacing-2xl);">
             <div style="font-size: 2rem; margin-bottom: var(--spacing-md);">⏳</div>
             <p style="color: var(--text-secondary);">
-                ${window.GeminiAPI && window.GeminiAPI.hasApiKey() 
-                    ? 'Generating AI-powered question...' 
+                ${window.OpenAIAPI && window.OpenAIAPI.hasApiKey() 
+                    ? 'Generating question (OpenAI)...' 
                     : 'Loading practice question...'}
             </p>
         </div>
@@ -293,23 +309,24 @@ async function loadPracticeQuestions(type) {
     
     let questionSet = [];
     
-    // Try to generate with Gemini AI if available
-    if (window.GeminiAPI && window.GeminiAPI.hasApiKey()) {
+    // Try to generate with server OpenAI if available
+    if (window.OpenAIAPI && window.OpenAIAPI.hasApiKey()) {
         try {
-            if (type === 'saq') {
-                const aiQuestion = await window.GeminiAPI.generateSAQ(currentPeriod);
+            if (type === 'mcq') {
+                const aiQuestion = await window.OpenAIAPI.generateMCQ(currentPeriod);
                 if (aiQuestion) {
                     aiQuestion.id = `ai-${Date.now()}`;
+                    aiQuestion.feedback = aiQuestion.explanation || aiQuestion.feedback || '';
                     questionSet = [aiQuestion];
                 }
             } else if (type === 'dbq') {
-                const aiDBQ = await window.GeminiAPI.generateDBQ(currentPeriod);
+                const aiDBQ = await window.OpenAIAPI.generateDBQ(currentPeriod);
                 if (aiDBQ) {
                     aiDBQ.id = `ai-dbq-${Date.now()}`;
                     questionSet = [aiDBQ];
                 }
             } else if (type === 'leq') {
-                const aiLEQ = await window.GeminiAPI.generateLEQ(currentPeriod);
+                const aiLEQ = await window.OpenAIAPI.generateLEQ(currentPeriod);
                 if (aiLEQ) {
                     aiLEQ.id = `ai-leq-${Date.now()}`;
                     questionSet = [aiLEQ];
@@ -351,14 +368,14 @@ async function loadPracticeQuestions(type) {
             }
         ];
         
-        // Pick a random variation
-        const randomIndex = Math.floor(Math.random() * questionVariations.length);
-        const selectedVariation = questionVariations[randomIndex];
+        // Pick variation based on current MCQ number (two questions per period)
+        const variationIndex = (mcqDisplayNumber - 1) % questionVariations.length;
+        const selectedVariation = questionVariations[variationIndex];
         
         const questions = {
-            saq: [
+            mcq: [
                 {
-                    id: `fallback-${Date.now()}-${randomIndex}`,
+                    id: `fallback-${Date.now()}-${variationIndex}`,
                     question: selectedVariation.question,
                     options: selectedVariation.options,
                     correct: selectedVariation.correct,
@@ -384,15 +401,17 @@ async function loadPracticeQuestions(type) {
         questionSet = questions[type] || [];
     }
     
-    if (type === 'saq') {
-        const aiIndicator = window.GeminiAPI && window.GeminiAPI.hasApiKey() && questionSet[0] && questionSet[0].id.startsWith('ai-') 
+    if (type === 'mcq') {
+        const aiIndicator = window.OpenAIAPI && window.OpenAIAPI.hasApiKey() && questionSet[0] && questionSet[0].id.startsWith('ai-') 
             ? '<span style="font-size: 0.75rem; color: var(--primary-color); margin-left: var(--spacing-sm);">✨ AI-Generated</span>' 
             : '';
         
-        practiceContent.innerHTML = questionSet.map((q, index) => `
-            <div class="practice-question" data-question-id="${q.id}">
+        practiceContent.innerHTML = questionSet.map((q, index) => {
+            const explainEnc = encodeURIComponent(q.feedback || q.explanation || '');
+            return `
+            <div class="practice-question" data-question-id="${q.id}" data-explanation="${explainEnc}">
                 <div class="question-text">
-                    <strong>Question ${index + 1}:</strong> ${q.question}${aiIndicator}
+                    <strong>MCQ ${mcqDisplayNumber}:</strong> ${q.question}${aiIndicator}
                 </div>
                 <ul class="question-options">
                     ${q.options.map((option, optIndex) => `
@@ -403,10 +422,11 @@ async function loadPracticeQuestions(type) {
                 </ul>
                 <div class="feedback" style="display: none;"></div>
                 <div class="question-actions">
-                    <button class="submit-btn" onclick="checkSAQAnswer('${String(q.id)}', ${q.correct})">Submit Answer</button>
+                    <button class="submit-btn" onclick="checkMCQAnswer('${String(q.id)}', ${q.correct})">Submit Answer</button>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
         
         // Add click handlers for options
         practiceContent.querySelectorAll('.option-item').forEach(item => {
@@ -417,49 +437,66 @@ async function loadPracticeQuestions(type) {
             });
         });
     } else if (type === 'dbq') {
-        const aiIndicator = window.GeminiAPI && window.GeminiAPI.hasApiKey() && questionSet[0] && questionSet[0].id.startsWith('ai-') 
+        const aiIndicator = window.OpenAIAPI && window.OpenAIAPI.hasApiKey() && questionSet[0] && questionSet[0].id.startsWith('ai-') 
             ? '<span style="font-size: 0.75rem; color: var(--primary-color); margin-left: var(--spacing-sm);">✨ AI-Generated</span>' 
             : '';
-        
         practiceContent.innerHTML = `
-            <div class="practice-question">
+            <div class="practice-question dbq-practice-block" data-dbq-prompt="${encodeURIComponent(questionSet[0].prompt)}">
                 <div class="question-text">
                     <strong>DBQ Prompt:</strong> ${questionSet[0].prompt}${aiIndicator}
                 </div>
                 <p style="color: var(--text-secondary); margin: var(--spacing-lg) 0;">
-                    This DBQ includes ${questionSet[0].documents} documents. Use the DBQ Annotation Tool in the Resources section to practice annotating and scoring your response.
+                    This DBQ is written for ${questionSet[0].documents} documents. Draft your response below, then run an instant score estimate to see your likely point range and revision targets.
                 </p>
                 <div style="padding: var(--spacing-lg); background: var(--bg-secondary); border-radius: var(--border-radius);">
-                    <h4 style="margin-bottom: var(--spacing-md);">DBQ Scoring Rubric:</h4>
+                    <h4 style="margin-bottom: var(--spacing-md);">DBQ point rubric (max 7)</h4>
                     <ul style="list-style: none; padding: 0;">
                         <li style="padding: var(--spacing-sm) 0;">✓ <strong>Thesis (1 pt):</strong> Responds to the prompt with a historically defensible thesis</li>
                         <li style="padding: var(--spacing-sm) 0;">✓ <strong>Context (1 pt):</strong> Describes broader historical context</li>
-                        <li style="padding: var(--spacing-sm) 0;">✓ <strong>Evidence (3 pts):</strong> Uses at least 6 documents to support argument</li>
-                        <li style="padding: var(--spacing-sm) 0;">✓ <strong>Analysis (2 pts):</strong> Explains how or why document supports argument</li>
+                        <li style="padding: var(--spacing-sm) 0;">✓ <strong>Evidence (3 pts):</strong> Uses evidence to support argument</li>
+                        <li style="padding: var(--spacing-sm) 0;">✓ <strong>Analysis (2 pts):</strong> Explains how or why evidence supports argument</li>
                     </ul>
                 </div>
-                <a href="resources.html" class="submit-btn" style="display: inline-block; text-decoration: none; margin-top: var(--spacing-lg);">
-                    Open DBQ Tool
-                </a>
-                ${window.GeminiAPI && window.GeminiAPI.hasApiKey() ? `
-                    <button class="submit-btn" onclick="generateNewQuestion('dbq')" style="background-color: var(--secondary-color); margin-top: var(--spacing-md);">
-                        Generate New DBQ Prompt
-                    </button>
-                ` : ''}
+                <label for="dbq-essay-input" class="config-label" style="display:block;margin-top:var(--spacing-lg);">Your response</label>
+                <textarea id="dbq-essay-input" class="config-input" style="width:100%;min-height:220px;font-family:inherit;" placeholder="Write a thesis, use evidence (cite documents if you refer to them), and analyze..."></textarea>
+                <div class="essay-estimate-panel" aria-label="DBQ score estimate details">
+                    <h4 class="essay-rubric-title">Instant score estimate</h4>
+                    <p class="essay-rubric-desc">This uses rubric-based heuristics (thesis, context, evidence density, analysis language, and structure) to estimate a likely AP-style score.</p>
+                    <label class="essay-estimate-toggle" for="dbq-advanced-grade">
+                        <input type="checkbox" id="dbq-advanced-grade" checked>
+                        <span>Advanced grader: compare to model outline and evidence anchors</span>
+                    </label>
+                </div>
+                <div class="question-actions" style="margin-top:var(--spacing-md);display:flex;flex-wrap:wrap;gap:var(--spacing-sm);align-items:center;">
+                    <button type="button" class="submit-btn" id="dbq-grade-btn">Estimate score &amp; feedback</button>
+                    <a href="resources.html" class="submit-btn" style="display: inline-block; text-decoration: none; background: var(--secondary-color);">
+                        Open DBQ Tool (Resources)
+                    </a>
+                    ${window.OpenAIAPI && window.OpenAIAPI.hasApiKey() ? `
+                    <button type="button" class="submit-btn" onclick="generateNewQuestion('dbq')" style="background-color: var(--bg-tertiary); color: var(--text-primary);">
+                        New DBQ prompt
+                    </button>` : ''}
+                </div>
+                <div id="dbq-grade-result" class="essay-rubric-result essay-grade-result" style="display:none;padding:var(--spacing-lg);background:var(--bg-secondary);border-radius:var(--border-radius);border:1px solid var(--border-color);"></div>
             </div>
         `;
+        const gradeBtn = document.getElementById('dbq-grade-btn');
+        const gradeOut = document.getElementById('dbq-grade-result');
+        if (gradeBtn && gradeOut) {
+            gradeBtn.addEventListener('click', () => applyRubricScore('dbq', gradeOut));
+        }
     } else if (type === 'leq') {
-        const aiIndicator = window.GeminiAPI && window.GeminiAPI.hasApiKey() && questionSet[0] && questionSet[0].id.startsWith('ai-') 
+        const aiIndicator = window.OpenAIAPI && window.OpenAIAPI.hasApiKey() && questionSet[0] && questionSet[0].id.startsWith('ai-') 
             ? '<span style="font-size: 0.75rem; color: var(--primary-color); margin-left: var(--spacing-sm);">✨ AI-Generated</span>' 
             : '';
         
         practiceContent.innerHTML = `
-            <div class="practice-question">
+            <div class="practice-question leq-practice-block" data-leq-prompt="${encodeURIComponent(questionSet[0].prompt)}">
                 <div class="question-text">
                     <strong>LEQ Prompt:</strong> ${questionSet[0].prompt}${aiIndicator}
                 </div>
                 <div style="margin: var(--spacing-lg) 0;">
-                    <h4 style="margin-bottom: var(--spacing-md);">LEQ Scoring Rubric:</h4>
+                    <h4 style="margin-bottom: var(--spacing-md);">LEQ point rubric (max 6)</h4>
                     <ul style="list-style: none; padding: 0;">
                         <li style="padding: var(--spacing-sm) 0;">✓ <strong>Thesis (1 pt):</strong> Responds to the prompt with a historically defensible thesis</li>
                         <li style="padding: var(--spacing-sm) 0;">✓ <strong>Context (1 pt):</strong> Describes broader historical context</li>
@@ -467,18 +504,298 @@ async function loadPracticeQuestions(type) {
                         <li style="padding: var(--spacing-sm) 0;">✓ <strong>Analysis (2 pts):</strong> Explains how or why evidence supports argument</li>
                     </ul>
                 </div>
-                <div style="padding: var(--spacing-lg); background: var(--bg-secondary); border-radius: var(--border-radius); margin-top: var(--spacing-lg);">
-                    <h4 style="margin-bottom: var(--spacing-md);">Outline Your Response:</h4>
-                    <textarea style="width: 100%; min-height: 200px; padding: var(--spacing-md); border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-primary); color: var(--text-primary); font-family: inherit;" placeholder="Write your thesis, context, evidence, and analysis here..."></textarea>
+                <label for="leq-essay-input" class="config-label" style="display:block;">Your response</label>
+                <textarea id="leq-essay-input" class="config-input" style="width: 100%; min-height: 220px; font-family: inherit;" placeholder="Write your thesis, context, body paragraphs with evidence, and analysis..."></textarea>
+                <div class="essay-estimate-panel" aria-label="LEQ score estimate details">
+                    <h4 class="essay-rubric-title">Instant score estimate</h4>
+                    <p class="essay-rubric-desc">The estimator scans your draft for argument clarity, historical context, concrete evidence, and line-of-reasoning language.</p>
+                    <label class="essay-estimate-toggle" for="leq-advanced-grade">
+                        <input type="checkbox" id="leq-advanced-grade" checked>
+                        <span>Advanced grader: compare to model outline and evidence anchors</span>
+                    </label>
                 </div>
-                ${window.GeminiAPI && window.GeminiAPI.hasApiKey() ? `
-                    <button class="submit-btn" onclick="generateNewQuestion('leq')" style="background-color: var(--secondary-color); margin-top: var(--spacing-md);">
-                        Generate New LEQ Prompt
-                    </button>
-                ` : ''}
+                <div class="question-actions" style="margin-top:var(--spacing-md);display:flex;flex-wrap:wrap;gap:var(--spacing-sm);">
+                    <button type="button" class="submit-btn" id="leq-grade-btn">Estimate score &amp; feedback</button>
+                    ${window.OpenAIAPI && window.OpenAIAPI.hasApiKey() ? `
+                    <button type="button" class="submit-btn" onclick="generateNewQuestion('leq')" style="background-color: var(--secondary-color);">
+                        New LEQ prompt
+                    </button>` : ''}
+                </div>
+                <div id="leq-grade-result" class="essay-rubric-result essay-grade-result" style="display:none;padding:var(--spacing-lg);background:var(--bg-secondary);border-radius:var(--border-radius);border:1px solid var(--border-color);"></div>
             </div>
         `;
+        const leqGradeBtn = document.getElementById('leq-grade-btn');
+        const leqGradeOut = document.getElementById('leq-grade-result');
+        if (leqGradeBtn && leqGradeOut) {
+            leqGradeBtn.addEventListener('click', () => applyRubricScore('leq', leqGradeOut));
+        }
     }
+}
+
+function dbqScoreBand(total) {
+    if (total >= 6) return { label: 'Strong', tip: 'You are in range of top scores—keep doing timed practice with the same rubric.' };
+    if (total >= 4) return { label: 'Developing', tip: 'Prioritize one more piece of evidence and a sentence of analysis for each example.' };
+    if (total >= 2) return { label: 'Emerging', tip: 'Make the thesis unmistakable, then build one strong paragraph before adding more.' };
+    return { label: 'Getting started', tip: 'Compare your draft to the rubric language; revise one category at a time.' };
+}
+
+function leqScoreBand(total) {
+    if (total >= 5) return { label: 'Strong', tip: 'Refine synthesis and counterargument if the prompt allows.' };
+    if (total >= 3) return { label: 'Developing', tip: 'Add specific names, dates, or events as evidence for each claim.' };
+    if (total >= 1) return { label: 'Emerging', tip: 'Lead with a defensible thesis that uses words from the prompt.' };
+    return { label: 'Getting started', tip: 'Outline thesis + two examples before expanding.' };
+}
+
+function structuralHints(text, essayType) {
+    const words = text.split(/\s+/).filter(Boolean).length;
+    const paras = text.split(/\n\s*\n/).filter(p => p.trim().length).length;
+    const hints = [];
+    const minWords = essayType === 'dbq' ? 300 : 350;
+    if (words < minWords) {
+        hints.push(`Draft length: about ${words} words. Many successful responses are longer—add context, examples, and analysis.`);
+    }
+    if (paras < 2) {
+        hints.push('Try splitting into paragraphs: introduction (thesis + context), body (evidence + analysis), optional conclusion.');
+    }
+    const lastBlock = text.trim().split('\n').pop() || '';
+    if (lastBlock.length > 0 && lastBlock.length < 40) {
+        hints.push('Consider a brief closing line that ties back to the prompt.');
+    }
+    return { words, paras, hints };
+}
+
+function normalizeKeyword(text) {
+    return String(text || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function collectPeriodAnchors(periodData) {
+    if (!periodData) return [];
+    const stop = new Set(['which', 'their', 'there', 'about', 'after', 'before', 'during', 'under', 'through', 'between', 'period', 'american', 'united', 'states', 'history']);
+    const raw = [];
+    const timeline = Array.isArray(periodData.timeline) ? periodData.timeline : [];
+    const concepts = Array.isArray(periodData.keyConcepts) ? periodData.keyConcepts : [];
+    const themes = Array.isArray(periodData.themes) ? periodData.themes : [];
+
+    timeline.slice(0, 8).forEach(event => raw.push(event.title || '', event.description || ''));
+    concepts.slice(0, 8).forEach(item => raw.push(item));
+    themes.slice(0, 8).forEach(item => raw.push(item));
+
+    const terms = raw
+        .map(normalizeKeyword)
+        .join(' ')
+        .split(' ')
+        .filter(token => token.length >= 5 && !stop.has(token));
+
+    return Array.from(new Set(terms)).slice(0, 24);
+}
+
+function buildModelOutline(essayType, promptText, periodData) {
+    const promptTerms = normalizeKeyword(promptText)
+        .split(' ')
+        .filter(token => token.length >= 5)
+        .slice(0, 10);
+    const anchors = collectPeriodAnchors(periodData);
+    const timeline = Array.isArray(periodData && periodData.timeline) ? periodData.timeline : [];
+    const contextExamples = timeline.slice(0, 3).map(item => item.title).filter(Boolean);
+
+    const evidenceTarget = essayType === 'dbq' ? 8 : 6;
+    return {
+        promptTerms,
+        anchors,
+        contextExamples,
+        evidenceTarget,
+        thesisChecklist: [
+            'Directly answers the prompt using extent/degree language',
+            'Mentions a historical category of change or continuity',
+            'Sets up a line of reasoning for body paragraphs'
+        ]
+    };
+}
+
+function evaluateAdvancedCoverage(essayText, model) {
+    const text = normalizeKeyword(essayText);
+    const coveredPromptTerms = model.promptTerms.filter(term => text.includes(term));
+    const coveredAnchors = model.anchors.filter(term => text.includes(term));
+    const missingAnchors = model.anchors.filter(term => !text.includes(term)).slice(0, 8);
+
+    const promptCoverage = model.promptTerms.length ? (coveredPromptTerms.length / model.promptTerms.length) : 0;
+    const anchorCoverage = model.anchors.length ? (coveredAnchors.length / model.anchors.length) : 0;
+    const rawEvidenceMentions = coveredAnchors.length + coveredPromptTerms.length;
+    const evidenceCoverage = Math.min(1, rawEvidenceMentions / Math.max(1, model.evidenceTarget));
+    const coverageScore = Math.round((promptCoverage * 0.35 + anchorCoverage * 0.4 + evidenceCoverage * 0.25) * 100);
+
+    const advancedTips = [];
+    if (promptCoverage < 0.55) advancedTips.push('Echo more prompt language in your thesis and topic sentences to stay tightly on-task.');
+    if (anchorCoverage < 0.35) advancedTips.push('Add more period-specific references (events, people, laws, or terms) to strengthen evidence quality.');
+    if (evidenceCoverage < 0.55) advancedTips.push(`Increase specific evidence mentions to at least ${model.evidenceTarget}.`);
+    if (missingAnchors.length) advancedTips.push(`Consider weaving in: ${missingAnchors.slice(0, 4).join(', ')}.`);
+
+    return {
+        coverageScore,
+        coveredPromptTerms,
+        coveredAnchors,
+        missingAnchors,
+        advancedTips
+    };
+}
+
+function estimateEssayScore(essayType, promptText, essayText, options = {}) {
+    const { advanced = false, periodData = null } = options;
+    const text = essayText.toLowerCase();
+    const firstChunk = text.split(/[.!?]/).slice(0, 2).join(' ');
+    const words = essayText.split(/\s+/).filter(Boolean).length;
+    const sentences = essayText.split(/[.!?]/).map(s => s.trim()).filter(Boolean).length;
+
+    const thesisSignals = ['although', 'while', 'because', 'therefore', 'thus', 'however', 'overall', 'ultimately', 'extent'];
+    const contextSignals = ['before', 'earlier', 'previously', 'prior to', 'in the broader context', 'long-term', 'continuity'];
+    const analysisSignals = ['because', 'therefore', 'as a result', 'led to', 'resulted in', 'this shows', 'which meant', 'however', 'although', 'whereas'];
+    const complexitySignals = ['however', 'although', 'despite', 'on the other hand', 'nevertheless', 'both', 'while also'];
+
+    const yearMatches = essayText.match(/\b(1[6-9]\d{2}|20\d{2})s?\b/g) || [];
+    const docRefs = (text.match(/\bdoc(ument)?\b/g) || []).length;
+    const quoteRefs = (essayText.match(/["']/g) || []).length / 2;
+
+    const promptKeywords = (promptText || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(token => token.length >= 5)
+        .slice(0, 8);
+    const keywordHits = promptKeywords.filter(token => text.includes(token)).length;
+
+    const thesisSignalHits = thesisSignals.filter(sig => firstChunk.includes(sig)).length;
+    const contextSignalHits = contextSignals.filter(sig => text.includes(sig)).length;
+    const analysisSignalHits = analysisSignals.filter(sig => text.includes(sig)).length;
+    const complexityHits = complexitySignals.filter(sig => text.includes(sig)).length;
+
+    let thesis = 0;
+    if (words >= 90 && (thesisSignalHits >= 1 || keywordHits >= Math.min(2, promptKeywords.length))) thesis = 1;
+
+    let context = 0;
+    if (words >= 120 && (contextSignalHits >= 1 || yearMatches.length >= 2)) context = 1;
+
+    let evidence = 0;
+    if (essayType === 'dbq') {
+        const rawEvidence = yearMatches.length + docRefs + Math.min(2, Math.floor(quoteRefs));
+        if (rawEvidence >= 2) evidence = 1;
+        if (rawEvidence >= 4) evidence = 2;
+        if (rawEvidence >= 6 || docRefs >= 3) evidence = 3;
+    } else {
+        const rawEvidence = yearMatches.length + Math.min(2, Math.floor(quoteRefs));
+        if (rawEvidence >= 2) evidence = 1;
+        if (rawEvidence >= 4) evidence = 2;
+    }
+
+    let analysis = 0;
+    if (analysisSignalHits >= 2 && sentences >= 5) analysis = 1;
+    if (analysisSignalHits >= 4 || complexityHits >= 2) analysis = 2;
+
+    const maxTotal = essayType === 'dbq' ? 7 : 6;
+    let total = thesis + context + evidence + analysis;
+    let confidence = Math.max(45, Math.min(95, 40 + (words / 12) + (analysisSignalHits * 4)));
+
+    const improvementTips = [];
+    if (!thesis) improvementTips.push('Start with a clearer one-sentence claim that directly answers the prompt using “to a great/moderate/limited extent.”');
+    if (!context) improvementTips.push('Add 2–3 context sentences about what happened before this period and why it matters.');
+    if (evidence < (essayType === 'dbq' ? 2 : 1)) improvementTips.push('Use more specific evidence: named events, laws, people, dates, and (for DBQ) document references.');
+    if (analysis < 2) improvementTips.push('After each evidence point, add a “because/therefore” sentence explaining how it proves your argument.');
+    if (words < (essayType === 'dbq' ? 300 : 350)) improvementTips.push(`Expand your response. Aim for at least ${essayType === 'dbq' ? 300 : 350}+ words for stronger coverage.`);
+
+    let advancedResult = null;
+    if (advanced && periodData) {
+        const model = buildModelOutline(essayType, promptText, periodData);
+        advancedResult = evaluateAdvancedCoverage(essayText, model);
+
+        if (advancedResult.coverageScore >= 70 && evidence < (essayType === 'dbq' ? 3 : 2)) {
+            evidence += 1;
+        }
+        if (advancedResult.coverageScore >= 75 && analysis < 2 && analysisSignalHits >= 1) {
+            analysis += 1;
+        }
+
+        total = Math.min(maxTotal, thesis + context + evidence + analysis);
+        confidence = Math.min(97, confidence + 6);
+        improvementTips.push(...advancedResult.advancedTips);
+        advancedResult.model = model;
+    }
+
+    return { thesis, context, evidence, analysis, total, maxTotal, confidence: Math.round(confidence), improvementTips, advancedResult };
+}
+
+/** Heuristic AP-style estimate + structural tips (no external AI). */
+function applyRubricScore(essayType, resultEl) {
+    const ta = document.getElementById(essayType === 'dbq' ? 'dbq-essay-input' : 'leq-essay-input');
+    const text = ta ? ta.value.trim() : '';
+    if (!text) {
+        alert('Write a draft first, then tap “Estimate score & feedback”.');
+        return;
+    }
+
+    const block = ta.closest('.practice-question');
+    const promptAttr = essayType === 'dbq' ? 'data-dbq-prompt' : 'data-leq-prompt';
+    const promptText = block ? decodeURIComponent(block.getAttribute(promptAttr) || '') : '';
+    const advancedToggleId = essayType === 'dbq' ? 'dbq-advanced-grade' : 'leq-advanced-grade';
+    const advancedEnabled = !!document.getElementById(advancedToggleId)?.checked;
+    const estimate = estimateEssayScore(essayType, promptText, text, { advanced: advancedEnabled, periodData: currentPeriod });
+    const { thesis, context, evidence, analysis, total, maxTotal, confidence, improvementTips, advancedResult } = estimate;
+    const band = essayType === 'dbq' ? dbqScoreBand(total) : leqScoreBand(total);
+    const { words, paras, hints } = structuralHints(text, essayType);
+
+    resultEl.style.display = 'block';
+    const hintList = hints.map(h => `<li>${h}</li>`).join('');
+    const improvementList = Array.from(new Set(improvementTips)).map(t => `<li>${t}</li>`).join('');
+    const pct = Math.round((total / maxTotal) * 100);
+    const advancedBlock = advancedResult ? `
+        <div class="essay-advanced-block">
+            <h5>Advanced model-outline alignment: ${advancedResult.coverageScore}%</h5>
+            <p class="essay-advanced-text">Covered prompt terms: ${advancedResult.coveredPromptTerms.length} | Period anchors used: ${advancedResult.coveredAnchors.length}</p>
+            <p class="essay-advanced-text"><strong>Suggested context examples:</strong> ${advancedResult.model.contextExamples.slice(0, 3).join(' | ') || 'Use broader context from events before the prompt period.'}</p>
+            <div class="essay-advanced-chips">
+                ${advancedResult.coveredAnchors.slice(0, 10).map(term => `<span class="essay-advanced-chip">${term}</span>`).join('') || '<span class="essay-advanced-chip">No anchor terms detected yet</span>'}
+            </div>
+            ${advancedResult.missingAnchors.length ? `
+            <p class="essay-advanced-missing"><strong>Missing high-value anchors:</strong> ${advancedResult.missingAnchors.slice(0, 6).join(', ')}</p>
+            ` : ''}
+        </div>
+    ` : '';
+    resultEl.innerHTML = `
+        <div class="essay-estimate-header">
+            <h4 class="essay-estimate-title">Estimated score: ${total} / ${maxTotal} (${band.label})</h4>
+            <span class="essay-estimate-confidence">Confidence: ~${confidence}%</span>
+        </div>
+        <div class="essay-estimate-meter" aria-hidden="true">
+            <span style="width:${pct}%"></span>
+        </div>
+        <div class="essay-estimate-grid">
+            <div class="essay-estimate-tile"><strong>Thesis</strong><span>${thesis} / 1</span></div>
+            <div class="essay-estimate-tile"><strong>Context</strong><span>${context} / 1</span></div>
+            <div class="essay-estimate-tile"><strong>Evidence</strong><span>${evidence} / ${essayType === 'dbq' ? 3 : 2}</span></div>
+            <div class="essay-estimate-tile"><strong>Analysis</strong><span>${analysis} / 2</span></div>
+        </div>
+        ${advancedBlock}
+        <p style="color:var(--text-secondary);">${band.tip}</p>
+        <p style="margin-bottom:0.25rem;"><strong>Revision priorities:</strong></p>
+        <ul class="essay-rubric-hints">
+            ${improvementList}
+        </ul>
+        <p style="margin-bottom:0.25rem;"><strong>Structural check</strong> (automated hints only, not a grade):</p>
+        <ul class="essay-rubric-hints">
+            <li>About ${words} words, ${paras} paragraph block(s).</li>
+            ${hintList}
+        </ul>
+        <p style="color:var(--text-muted);font-size:0.875rem;margin-top:var(--spacing-md);">Estimate only. Real AP scores come from human readers, but this is useful for fast iterative practice.</p>
+    `;
+
+    trackUnitMetric(metrics => {
+        const bucket = essayType === 'dbq' ? 'dbq' : 'leq';
+        metrics[bucket] = metrics[bucket] || {};
+        metrics[bucket].attempts = (metrics[bucket].attempts || 0) + 1;
+        metrics[bucket].totalEstimated = (metrics[bucket].totalEstimated || 0) + total;
+        metrics[bucket].maxPossible = maxTotal;
+        metrics[bucket].avgEstimated = Number((metrics[bucket].totalEstimated / metrics[bucket].attempts).toFixed(2));
+        metrics[bucket].lastConfidence = confidence;
+        metrics[bucket].lastUpdatedAt = new Date().toISOString();
+    });
 }
 
 // Generate new question using AI
@@ -487,7 +804,7 @@ async function generateNewQuestion(type) {
     if (!practiceContent) return;
     
     // If API is available, use it; otherwise use fallback
-    if (window.GeminiAPI && window.GeminiAPI.hasApiKey()) {
+    if (window.OpenAIAPI && window.OpenAIAPI.hasApiKey()) {
         await loadPracticeQuestions(type);
     } else {
         // For fallback, just reload with a new question
@@ -495,7 +812,7 @@ async function generateNewQuestion(type) {
     }
 }
 
-function checkSAQAnswer(questionId, correctIndex) {
+function checkMCQAnswer(questionId, correctIndex) {
     // Handle both string and number IDs
     const questionEl = document.querySelector(`[data-question-id="${questionId}"]`);
     if (!questionEl) {
@@ -528,13 +845,36 @@ function checkSAQAnswer(questionId, correctIndex) {
         feedbackEl.style.display = 'block';
         if (selectedIndex === correctIndex) {
             feedbackEl.className = 'feedback correct';
-            feedbackEl.textContent = '✓ Correct! ' + (questionEl.querySelector('.option-item.correct').textContent);
+            let extra = '';
+            try {
+                const enc = questionEl.getAttribute('data-explanation');
+                if (enc) extra = ' ' + decodeURIComponent(enc);
+            } catch (e) { /* ignore */ }
+            feedbackEl.textContent = '✓ Correct!' + extra;
+            trackUnitMetric(metrics => {
+                metrics.mcq = metrics.mcq || {};
+                metrics.mcq.attempts = (metrics.mcq.attempts || 0) + 1;
+                metrics.mcq.correct = (metrics.mcq.correct || 0) + 1;
+                metrics.mcq.accuracy = Number(((metrics.mcq.correct / metrics.mcq.attempts) * 100).toFixed(1));
+            });
             
             // Update progress
             updatePracticeProgress(true);
         } else {
             feedbackEl.className = 'feedback incorrect';
-            feedbackEl.textContent = '✗ Incorrect. The correct answer is: ' + questionEl.querySelectorAll('.option-item')[correctIndex].textContent;
+            let extra = '';
+            try {
+                const enc = questionEl.getAttribute('data-explanation');
+                if (enc) extra = ' ' + decodeURIComponent(enc);
+            } catch (e) { /* ignore */ }
+            feedbackEl.textContent = '✗ Incorrect. The correct answer is: ' + questionEl.querySelectorAll('.option-item')[correctIndex].textContent + '.' + extra;
+            trackUnitMetric(metrics => {
+                metrics.mcq = metrics.mcq || {};
+                metrics.mcq.attempts = (metrics.mcq.attempts || 0) + 1;
+                metrics.mcq.incorrect = (metrics.mcq.incorrect || 0) + 1;
+                const correct = metrics.mcq.correct || 0;
+                metrics.mcq.accuracy = Number(((correct / metrics.mcq.attempts) * 100).toFixed(1));
+            });
             
             updatePracticeProgress(false);
         }
@@ -554,9 +894,10 @@ function checkSAQAnswer(questionId, correctIndex) {
         nextButton.style.cssText = 'background-color: var(--success-color); margin-top: var(--spacing-md);';
         nextButton.textContent = 'Next Question →';
         nextButton.onclick = () => {
+            mcqDisplayNumber += 1;
             const practiceTypeBtns = document.querySelectorAll('.practice-type-btn');
             const activeType = Array.from(practiceTypeBtns).find(btn => btn.classList.contains('active'));
-            const currentType = activeType ? activeType.dataset.type : 'saq';
+            const currentType = activeType ? activeType.dataset.type : 'mcq';
             loadPracticeQuestions(currentType);
         };
         submitBtn.parentNode.insertBefore(nextButton, submitBtn.nextSibling);
@@ -564,17 +905,24 @@ function checkSAQAnswer(questionId, correctIndex) {
 }
 
 function updatePracticeProgress(correct) {
+    const isAuth = window.AuthManager && typeof window.AuthManager.isAuthenticated === 'function' && window.AuthManager.isAuthenticated();
+    if (!isAuth) {
+        if (!document.getElementById('practice-login-save-hint')) {
+            const practiceContent = document.getElementById('practice-content');
+            if (practiceContent) {
+                const hint = document.createElement('div');
+                hint.id = 'practice-login-save-hint';
+                hint.style.cssText = 'margin: var(--spacing-md) 0; padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--border-color); border-radius: var(--border-radius); color: var(--text-secondary); background: var(--bg-secondary); font-size: 0.875rem;';
+                hint.textContent = 'You are in guest mode. Progress is not saved until you log in.';
+                practiceContent.prepend(hint);
+            }
+        }
+        updateUnitProgress();
+        return;
+    }
+
     const progress = APUSH.getUserProgress();
-    progress.practiceQuestions = (progress.practiceQuestions || 0) + 1;
-    
-    // Update period mastery based on practice
-    if (!progress.periods[currentPeriod.number]) {
-        progress.periods[currentPeriod.number] = { mastery: 0, completed: false };
-    }
-    
-    if (correct) {
-        progress.periods[currentPeriod.number].mastery = Math.min(100, (progress.periods[currentPeriod.number].mastery || 0) + 5);
-    }
+    APUSH.recordPracticeAttempt(progress, currentPeriod.number, correct);
     
     // Add activity
     if (!progress.activities) progress.activities = [];
@@ -593,5 +941,5 @@ function updatePracticeProgress(correct) {
 }
 
 // Make functions available globally
-window.checkSAQAnswer = checkSAQAnswer;
+window.checkMCQAnswer = checkMCQAnswer;
 window.generateNewQuestion = generateNewQuestion;

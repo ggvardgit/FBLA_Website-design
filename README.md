@@ -102,11 +102,12 @@ awv/
 ├── dashboard.html      # Student progress dashboard
 ├── schedule.html       # Live study schedule
 ├── resources.html      # Resources hub
-├── api-config.html     # Gemini API configuration page
+├── app.py              # Flask server: static site + OpenAI API (ChatGPT) proxy
+├── requirements.txt    # Python deps (flask, openai)
 ├── styles.css          # Main stylesheet (mobile-first, responsive)
 ├── script.js           # Shared JavaScript (navigation, theme, modals)
 ├── apush-data.js       # All APUSH period content and data
-├── gemini-api.js       # Gemini AI integration for question generation
+├── openai-api.js       # Client calls server /api/* (no API key in browser)
 ├── home.js             # Home page functionality
 ├── units.js            # Units page functionality
 ├── dashboard.js        # Dashboard functionality
@@ -117,23 +118,26 @@ awv/
 
 ### Data Storage
 
-- **LocalStorage**: User progress, preferences, activity tracking, and API keys
+- **LocalStorage**: User progress, preferences, activity tracking
 - **No External Dependencies**: Fully offline-capable for judging (with fallback questions)
 - **Structured Data**: JSON-based period content for easy maintenance
 
-### AI Integration (Gemini)
+### AI Integration (OpenAI / ChatGPT API)
 
-- **Optional AI-Powered Questions**: Uses Google's Gemini API to generate dynamic practice questions
-- **API Key Management**: Secure local storage of API keys (never shared)
-- **Fallback System**: Gracefully falls back to sample questions if API unavailable
-- **Question Types**: Generates SAQ, DBQ, and LEQ prompts aligned with APUSH standards
-- **Period-Specific**: Questions are tailored to each period's themes and key concepts
+- **Server-side only**: Set `OPENAI_API_KEY` on the machine running `python app.py`. The browser never receives the key.
+- **Optional**: If the key is missing, the site still works using built-in fallback questions.
+- **Endpoints**: MCQ, DBQ, LEQ, LEQ outline, and essay grading are proxied through `/api/ai`.
+- **Model**: Override with `OPENAI_MODEL` (default `gpt-4o-mini`).
 
-To enable AI-generated questions:
-1. Get a free API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Navigate to "AI Settings" in the navigation menu
-3. Enter your API key and test the connection
-4. Practice questions will now be AI-generated!
+To enable AI:
+
+```bash
+pip install -r requirements.txt
+export OPENAI_API_KEY="sk-..."
+python app.py
+```
+
+Then open `http://localhost:8000` (not `file://`). Use **Settings → AI** to confirm status.
 
 ### Browser Compatibility
 
@@ -175,22 +179,18 @@ The platform tracks and displays:
 
 ## Usage Instructions
 
-1. Open `index.html` in a web browser
-2. Navigate using the top navigation menu
-3. (Optional) Configure Gemini API key in "AI Settings" for AI-generated questions
-4. Click on period cards to access study materials
-5. Complete practice questions to track progress
-6. View dashboard for personalized recommendations
-7. RSVP for live study sessions
-8. Use resources hub for DBQ tools and practice sets
+1. **Recommended:** Run `pip install -r requirements.txt`, set `OPENAI_API_KEY`, then `python app.py` and open `http://localhost:8000`.
+2. Navigate using the top navigation menu.
+3. (Optional) Confirm AI status under **Settings (gear) → AI (ChatGPT)**.
+4. Click period cards to access study materials; complete practice questions to track progress.
+5. **Live Study:** RSVP and use **Join video room** (Jitsi Meet) for browser-based video.
+6. Use the resources hub for DBQ tools and practice sets.
 
 ### Enabling AI-Generated Questions
 
-1. Click "AI Settings" in the navigation menu
-2. Get a free API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-3. Enter your API key in the configuration page
-4. Click "Test Connection" to verify it works
-5. Practice questions will now be dynamically generated using AI!
+1. Obtain an [OpenAI API key](https://platform.openai.com/api-keys) (paid or trial credits).
+2. On the server: `export OPENAI_API_KEY="sk-..."` and run `python app.py`.
+3. Reload the site and use Settings → **Test AI** if desired.
 
 ## Offline Demonstration
 

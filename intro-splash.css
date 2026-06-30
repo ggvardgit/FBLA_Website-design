@@ -1,0 +1,175 @@
+/* Full-screen intro before main app (homepage) */
+.intro-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f1e8;
+  overflow: hidden;
+}
+
+.intro-splash[hidden] {
+  display: none !important;
+}
+
+.intro-splash--exit {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.intro-splash__hills {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.intro-splash__hills .glsl-hills__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.intro-splash__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 45%,
+    transparent 0%,
+    rgba(246, 241, 232, 0.4) 55%,
+    rgba(246, 241, 232, 0.92) 100%
+  );
+  pointer-events: none;
+}
+
+.intro-splash__content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: var(--spacing-xl);
+  max-width: 42rem;
+  pointer-events: none;
+}
+
+.intro-splash__content * {
+  pointer-events: auto;
+}
+
+.intro-splash__eyebrow {
+  margin: 0 0 var(--spacing-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--navy, #102a43);
+}
+
+.intro-splash__title {
+  margin: 0 0 var(--spacing-md);
+  font-family: var(--font-display, "Cormorant Garamond", Georgia, serif);
+  font-size: clamp(2.75rem, 10vw, 5rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.05;
+  color: var(--text, #101820);
+  text-shadow: none;
+}
+
+.intro-splash__subtitle {
+  margin: 0 auto var(--spacing-xl);
+  font-size: clamp(0.95rem, 2.5vw, 1.125rem);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 36ch;
+}
+
+.intro-splash__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.intro-splash__cta {
+  min-width: 12rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+button.intro-splash__cta {
+  font-family: inherit;
+}
+
+a.intro-splash__skip {
+  display: inline-block;
+  text-decoration: underline;
+}
+
+.intro-splash__skip,
+button.intro-splash__skip {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: var(--spacing-xs);
+  font-family: inherit;
+}
+
+.intro-splash__skip:hover,
+button.intro-splash__skip:hover {
+  color: var(--primary-color);
+}
+
+.intro-splash__top-bar {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+body.intro-active {
+  overflow: hidden;
+}
+
+.app-shell--gated {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+
+.app-shell:not(.app-shell--gated) {
+  visibility: visible;
+  height: auto;
+}
+
+/* Skip splash flash when session already exists (see index.html head script) */
+html.apush-authenticated-boot #intro-splash {
+  display: none !important;
+}
+
+html.apush-authenticated-boot #app-shell.app-shell--gated {
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+}
+
+html.apush-authenticated-boot body {
+  overflow: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-splash__hills {
+    background: linear-gradient(165deg, #0a1628 0%, #1a2a4a 45%, #050508 100%);
+  }
+}

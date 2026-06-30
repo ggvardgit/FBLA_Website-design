@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Account settings and preferences">
     <title>Settings | APUSH Learning Hub</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta http-equiv="refresh" content="0;url=index.html?settings=1">
+    <script>window.location.replace('index.html?settings=1');</script>
+    <link rel="stylesheet" href="styles.css?v=museum1">
     <style>
         .settings-container {
             display: flex;
@@ -20,9 +22,9 @@
         }
         
         .settings-nav {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-lg);
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             padding: var(--spacing-md);
             position: sticky;
             top: calc(var(--spacing-xl) + 80px);
@@ -296,11 +298,12 @@
         }
     </style>
 </head>
-<body>
+<body class="museum-site">
     <nav class="navbar" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <a href="index.html" class="logo" aria-label="APUSH Learning Hub Home">
-                <span class="logo-text">APUSH Hub</span>
+            <a href="index.html" class="logo" aria-label="APUSH HUB Home">
+                <span class="logo-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19V5l8-3 8 3v14"/><path d="M8 10h8M8 14h5"/></svg></span>
+                <span class="logo-text">APUSH HUB</span>
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span>
@@ -310,24 +313,25 @@
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link">Home</a></li>
                 <li><a href="units.html" class="nav-link">Units</a></li>
-                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
-                <li><a href="schedule.html" class="nav-link">Live Study</a></li>
                 <li><a href="resources.html" class="nav-link">Resources</a></li>
-                <li><a href="api-config.html" class="nav-link">AI Settings</a></li>
-                <li><a href="settings.html" class="nav-link active">Settings</a></li>
+                <li><a href="schedule.html" class="nav-link">Schedule</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="settings.html" class="nav-link active" aria-current="page">Settings</a></li>
             </ul>
             <div class="nav-controls">
-                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-                    <span class="theme-icon">🌙</span>
-                </button>
-                <button class="motion-toggle" aria-label="Toggle reduced motion" title="Reduce motion">
-                    <span class="motion-icon">⚙️</span>
-                </button>
+                <div data-theme-toggler-root class="theme-toggler-root" hidden aria-hidden="true"></div>
             </div>
         </div>
     </nav>
 
     <main class="main-content">
+        <section class="page-hero" aria-labelledby="settings-page-heading" style="padding-bottom:1.5rem;">
+            <div class="container">
+                <span class="section-label">Preferences</span>
+                <h1 id="settings-page-heading" class="display-heading page-title">Settings</h1>
+                <p class="page-subtitle">Account, appearance, accessibility, and data—organized in archive panels.</p>
+            </div>
+        </section>
         <div class="container">
             <div class="settings-container">
                 <aside class="settings-sidebar">
@@ -411,6 +415,17 @@
                                     <option value="dark">Dark</option>
                                     <option value="system">System</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Theme Color</div>
+                                <div class="setting-description">Choose your accent color (hue)</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="range" id="theme-hue-slider" class="theme-hue-slider" min="0" max="360" value="217" aria-label="Theme color hue">
+                                <p class="theme-hue-value"><span id="theme-hue-display">217</span>°</p>
                             </div>
                         </div>
                     </section>
@@ -527,211 +542,253 @@
 
     <footer class="footer" role="contentinfo">
         <div class="container">
-            <p>&copy; 2024 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
+            <p>&copy; 2026 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
         </div>
     </footer>
 
     <script src="user-session.js"></script>
+    <script src="auth-guard.js"></script>
     <script src="script.js"></script>
+    <script src="theme-toggler.js"></script>
     <script>
-        // Require authentication
         document.addEventListener('DOMContentLoaded', () => {
-            if (!window.AuthManager || !window.AuthManager.requireAuth()) {
-                return;
+            if (typeof window.AuthManager !== 'undefined') {
+                window.AuthManager.init();
             }
-            
             initSettings();
         });
-        
+
+        function isGuest() {
+            return !window.AuthManager || !window.AuthManager.isAuthenticated();
+        }
+
+        function getGuestSettings() {
+            return {
+                theme: localStorage.getItem('theme') || 'light',
+                reducedMotion: localStorage.getItem('reducedMotion') === 'true',
+                fontSize: localStorage.getItem('fontSize') || 'medium',
+                highContrast: localStorage.getItem('highContrast') === 'true',
+                primaryHue: Number(localStorage.getItem('primaryHue')) || 217
+            };
+        }
+
+        function applyPrimaryHue(hue) {
+            document.documentElement.style.setProperty('--primary-color', `hsl(${hue}, 70%, 50%)`);
+            document.documentElement.style.setProperty('--primary-hover', `hsl(${hue}, 70%, 40%)`);
+        }
+
+        function setGuestSetting(key, value) {
+            if (key === 'theme') localStorage.setItem('theme', value);
+            else if (key === 'reducedMotion') localStorage.setItem('reducedMotion', value ? 'true' : 'false');
+            else if (key === 'fontSize') localStorage.setItem('fontSize', value);
+            else if (key === 'highContrast') {
+                localStorage.setItem('highContrast', value ? 'true' : 'false');
+                document.documentElement.setAttribute('data-high-contrast', value ? 'true' : 'false');
+            }
+            else if (key === 'primaryHue') localStorage.setItem('primaryHue', String(value));
+        }
+
         function initSettings() {
-            const userInfo = window.AuthManager.getUserInfo();
-            const settings = userInfo.settings;
-            
-            // Load account info
-            document.getElementById('account-email').textContent = userInfo.email;
-            if (userInfo.lastLogin) {
-                const lastLoginDate = new Date(userInfo.lastLogin);
-                document.getElementById('last-login').textContent = 
-                    `Last login: ${lastLoginDate.toLocaleString()}`;
-                document.getElementById('security-last-login').textContent = 
-                    lastLoginDate.toLocaleString();
+            const guest = isGuest();
+
+            if (guest) {
+                document.querySelectorAll('.settings-nav-item[data-section="account"], .settings-nav-item[data-section="privacy"], .settings-nav-item[data-section="security"]').forEach(el => el.style.display = 'none');
+                document.getElementById('account-section').innerHTML = '<h2 class="section-title">Account</h2><p class="section-description">Sign in to manage your account, sync progress across devices, and access privacy controls.</p><a href="login.html" class="submit-btn" style="display:inline-block;text-decoration:none;text-align:center;">Sign In</a>';
+                document.querySelector('.settings-nav-item[data-section="appearance"]').classList.add('active');
+                document.querySelector('.settings-nav-item[data-section="account"]').classList.remove('active');
+                switchSection('appearance');
+            } else {
+                const userInfo = window.AuthManager.getUserInfo();
+                const settings = userInfo.settings;
+                document.getElementById('account-email').textContent = userInfo.email;
+                if (userInfo.lastLogin) {
+                    const d = new Date(userInfo.lastLogin);
+                    document.getElementById('last-login').textContent = 'Last login: ' + d.toLocaleString();
+                    document.getElementById('security-last-login').textContent = d.toLocaleString();
+                }
+                if (settings) {
+                    document.getElementById('theme-select').value = settings.theme || 'light';
+                    const rm = document.getElementById('reduced-motion-toggle');
+                    rm.classList.toggle('active', settings.reducedMotion || false);
+                    rm.setAttribute('aria-checked', settings.reducedMotion || false);
+                    document.getElementById('font-size-select').value = settings.fontSize || 'medium';
+                    const hc = document.getElementById('high-contrast-toggle');
+                    hc.classList.toggle('active', settings.highContrast || false);
+                    hc.setAttribute('aria-checked', settings.highContrast || false);
+                    document.getElementById('save-history-toggle').classList.toggle('active', settings.saveHistory !== false);
+                    document.getElementById('recommendations-toggle').classList.toggle('active', settings.personalizedRecommendations !== false);
+                }
             }
-            
-            // Load settings values
-            if (settings) {
-                // Appearance
-                document.getElementById('theme-select').value = settings.theme || 'light';
-                
-                // Accessibility
-                const reducedMotionToggle = document.getElementById('reduced-motion-toggle');
-                reducedMotionToggle.classList.toggle('active', settings.reducedMotion || false);
-                reducedMotionToggle.setAttribute('aria-checked', settings.reducedMotion || false);
-                
-                document.getElementById('font-size-select').value = settings.fontSize || 'medium';
-                
-                const highContrastToggle = document.getElementById('high-contrast-toggle');
-                highContrastToggle.classList.toggle('active', settings.highContrast || false);
-                highContrastToggle.setAttribute('aria-checked', settings.highContrast || false);
-                
-                // Privacy
-                const saveHistoryToggle = document.getElementById('save-history-toggle');
-                saveHistoryToggle.classList.toggle('active', settings.saveHistory !== false);
-                saveHistoryToggle.setAttribute('aria-checked', settings.saveHistory !== false);
-                
-                const recommendationsToggle = document.getElementById('recommendations-toggle');
-                recommendationsToggle.classList.toggle('active', settings.personalizedRecommendations !== false);
-                recommendationsToggle.setAttribute('aria-checked', settings.personalizedRecommendations !== false);
+
+            const settings = guest ? getGuestSettings() : (window.AuthManager.getUserInfo().settings || {});
+            document.getElementById('theme-select').value = settings.theme || 'light';
+            document.getElementById('reduced-motion-toggle').classList.toggle('active', settings.reducedMotion || false);
+            document.getElementById('reduced-motion-toggle').setAttribute('aria-checked', settings.reducedMotion || false);
+            document.getElementById('font-size-select').value = settings.fontSize || 'medium';
+            document.documentElement.setAttribute('data-font-size', settings.fontSize || 'medium');
+            document.getElementById('high-contrast-toggle').classList.toggle('active', settings.highContrast || false);
+            document.getElementById('high-contrast-toggle').setAttribute('aria-checked', settings.highContrast || false);
+            document.documentElement.setAttribute('data-high-contrast', settings.highContrast ? 'true' : 'false');
+
+            const hueSlider = document.getElementById('theme-hue-slider');
+            const hueDisplay = document.getElementById('theme-hue-display');
+            const hue = settings.primaryHue !== undefined ? settings.primaryHue : 217;
+            if (hueSlider) {
+                hueSlider.value = hue;
+                hueSlider.style.background = 'linear-gradient(to right, red, yellow, lime, cyan, blue, magenta, red)';
             }
-            
-            // Navigation
-            const navItems = document.querySelectorAll('.settings-nav-item');
-            navItems.forEach(item => {
+            if (hueDisplay) hueDisplay.textContent = hue;
+            applyPrimaryHue(hue);
+
+            if (!guest) {
+                document.getElementById('save-history-toggle').classList.toggle('active', (settings.saveHistory !== false));
+                document.getElementById('recommendations-toggle').classList.toggle('active', (settings.personalizedRecommendations !== false));
+            }
+
+            document.querySelectorAll('.settings-nav-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
+                    if (item.style.display === 'none') return;
                     const section = item.dataset.section;
                     switchSection(section);
-                    
-                    navItems.forEach(ni => ni.classList.remove('active'));
+                    document.querySelectorAll('.settings-nav-item').forEach(ni => ni.classList.remove('active'));
                     item.classList.add('active');
                 });
             });
-            
-            // Theme change
+
             document.getElementById('theme-select').addEventListener('change', (e) => {
-                window.AuthManager.updateSetting('theme', e.target.value);
+                const v = e.target.value;
+                const resolved = v === 'system' ? (window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light') : v;
+                document.documentElement.setAttribute('data-theme', resolved);
+                document.documentElement.classList.toggle('dark', resolved === 'dark');
+                if (guest) setGuestSetting('theme', v);
+                else window.AuthManager.updateSetting('theme', v);
+                const icon = document.querySelector('.theme-icon');
+                if (icon) icon.textContent = resolved === 'dark' ? '☀️' : '🌙';
             });
-            
-            // Reduced motion toggle
+
+            if (hueSlider) {
+                hueSlider.addEventListener('input', () => {
+                    const v = parseInt(hueSlider.value, 10);
+                    if (hueDisplay) hueDisplay.textContent = v;
+                    applyPrimaryHue(v);
+                    if (guest) setGuestSetting('primaryHue', v);
+                    else window.AuthManager.updateSetting('primaryHue', v);
+                });
+            }
+
             document.getElementById('reduced-motion-toggle').addEventListener('click', function() {
                 const active = !this.classList.contains('active');
                 this.classList.toggle('active', active);
                 this.setAttribute('aria-checked', active);
-                window.AuthManager.updateSetting('reducedMotion', active);
+                document.documentElement.setAttribute('data-reduced-motion', active ? 'true' : 'false');
+                if (guest) setGuestSetting('reducedMotion', active);
+                else window.AuthManager.updateSetting('reducedMotion', active);
             });
-            
-            // Font size
+
             document.getElementById('font-size-select').addEventListener('change', (e) => {
-                window.AuthManager.updateSetting('fontSize', e.target.value);
-                document.documentElement.setAttribute('data-font-size', e.target.value);
+                const v = e.target.value;
+                document.documentElement.setAttribute('data-font-size', v || 'medium');
+                if (guest) setGuestSetting('fontSize', v);
+                else window.AuthManager.updateSetting('fontSize', v);
             });
-            
-            // High contrast toggle
+
             document.getElementById('high-contrast-toggle').addEventListener('click', function() {
                 const active = !this.classList.contains('active');
                 this.classList.toggle('active', active);
                 this.setAttribute('aria-checked', active);
-                window.AuthManager.updateSetting('highContrast', active);
                 document.documentElement.setAttribute('data-high-contrast', active ? 'true' : 'false');
-            });
-            
-            // Privacy toggles
-            document.getElementById('save-history-toggle').addEventListener('click', function() {
-                const active = !this.classList.contains('active');
-                this.classList.toggle('active', active);
-                this.setAttribute('aria-checked', active);
-                window.AuthManager.updateSetting('saveHistory', active);
-            });
-            
-            document.getElementById('recommendations-toggle').addEventListener('click', function() {
-                const active = !this.classList.contains('active');
-                this.classList.toggle('active', active);
-                this.setAttribute('aria-checked', active);
-                window.AuthManager.updateSetting('personalizedRecommendations', active);
-            });
-            
-            // Password change
-            document.getElementById('change-password-btn').addEventListener('click', () => {
-                const form = document.getElementById('password-form');
-                form.classList.toggle('hidden');
-            });
-            
-            document.getElementById('cancel-password-btn').addEventListener('click', () => {
-                document.getElementById('password-form').classList.add('hidden');
-                document.getElementById('password-message').classList.remove('show');
-                document.getElementById('current-password').value = '';
-                document.getElementById('new-password').value = '';
-                document.getElementById('confirm-password').value = '';
-            });
-            
-            document.getElementById('save-password-btn').addEventListener('click', () => {
-                const currentPassword = document.getElementById('current-password').value;
-                const newPassword = document.getElementById('new-password').value;
-                const confirmPassword = document.getElementById('confirm-password').value;
-                const messageEl = document.getElementById('password-message');
-                
-                if (!currentPassword || !newPassword || !confirmPassword) {
-                    messageEl.textContent = 'Please fill in all fields.';
-                    messageEl.className = 'password-message error show';
-                    return;
-                }
-                
-                if (newPassword.length < 6) {
-                    messageEl.textContent = 'New password must be at least 6 characters.';
-                    messageEl.className = 'password-message error show';
-                    return;
-                }
-                
-                if (newPassword !== confirmPassword) {
-                    messageEl.textContent = 'Passwords do not match.';
-                    messageEl.className = 'password-message error show';
-                    return;
-                }
-                
-                try {
-                    window.AuthManager.changePassword(currentPassword, newPassword);
-                    messageEl.textContent = 'Password changed successfully!';
-                    messageEl.className = 'password-message success show';
-                    
-                    setTimeout(() => {
-                        document.getElementById('password-form').classList.add('hidden');
-                        messageEl.classList.remove('show');
-                        document.getElementById('current-password').value = '';
-                        document.getElementById('new-password').value = '';
-                        document.getElementById('confirm-password').value = '';
-                    }, 2000);
-                } catch (error) {
-                    messageEl.textContent = error.message || 'Failed to change password.';
-                    messageEl.className = 'password-message error show';
+                if (guest) {
+                    localStorage.setItem('highContrast', active ? 'true' : 'false');
+                } else {
+                    window.AuthManager.updateSetting('highContrast', active);
                 }
             });
-            
-            // Logout
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                if (confirm('Are you sure you want to log out?')) {
-                    window.AuthManager.logout();
+
+            if (!guest) {
+                document.getElementById('save-history-toggle').addEventListener('click', function() {
+                    const active = !this.classList.contains('active');
+                    this.classList.toggle('active', active);
+                    window.AuthManager.updateSetting('saveHistory', active);
+                });
+                document.getElementById('recommendations-toggle').addEventListener('click', function() {
+                    const active = !this.classList.contains('active');
+                    this.classList.toggle('active', active);
+                    window.AuthManager.updateSetting('personalizedRecommendations', active);
+                });
+                document.getElementById('change-password-btn').addEventListener('click', () => {
+                    document.getElementById('password-form').classList.toggle('hidden');
+                });
+                document.getElementById('cancel-password-btn').addEventListener('click', () => {
+                    document.getElementById('password-form').classList.add('hidden');
+                    document.getElementById('password-message').classList.remove('show');
+                });
+                document.getElementById('save-password-btn').addEventListener('click', savePassword);
+                document.getElementById('logout-btn').addEventListener('click', () => { if (confirm('Log out?')) window.AuthManager.logout(); });
+                document.getElementById('clear-cache-btn').addEventListener('click', () => {
+                    if (confirm('Clear all cached data? Progress and settings will reset.')) {
+                        const u = window.AuthManager.getCurrentUser();
+                        if (u) {
+                            localStorage.removeItem('user_' + u.id + '_settings');
+                            localStorage.removeItem('user_' + u.id + '_progress');
+                        }
+                        alert('Cache cleared. Refreshing.');
+                        location.reload();
+                    }
+                });
+                document.getElementById('signout-all-btn').addEventListener('click', () => { if (confirm('Sign out of all sessions?')) window.AuthManager.logout(); });
+            }
+            if (guest) {
+                const accSection = document.getElementById('accessibility-section');
+                if (accSection) {
+                    const div = document.createElement('div');
+                    div.className = 'setting-item';
+                    div.style.marginTop = '1rem';
+                    div.innerHTML = '<div class="setting-label"><div class="setting-title">Clear Local Data</div><div class="setting-description">Remove saved preferences and progress from this device</div></div><div class="setting-control"><button type="button" class="btn-secondary" id="guest-clear-btn">Clear</button></div>';
+                    accSection.appendChild(div);
+                    document.getElementById('guest-clear-btn').addEventListener('click', () => {
+                        if (confirm('Clear all local preferences and progress?')) {
+                            localStorage.removeItem('theme');
+                            localStorage.removeItem('reducedMotion');
+                            localStorage.removeItem('fontSize');
+                            localStorage.removeItem('highContrast');
+                            localStorage.removeItem('primaryHue');
+                            localStorage.removeItem('userProgress');
+                            document.documentElement.removeAttribute('data-high-contrast');
+                            document.documentElement.removeAttribute('data-font-size');
+                            alert('Cleared. Refreshing.');
+                            location.reload();
+                        }
+                    });
                 }
-            });
-            
-            // Clear cache
-            document.getElementById('clear-cache-btn').addEventListener('click', () => {
-                if (confirm('This will clear all cached data for your account (settings and progress will be reset). Continue?')) {
-                    const userId = window.AuthManager.getCurrentUser().id;
-                    // Clear user-specific cached data
-                    localStorage.removeItem(`user_${userId}_settings`);
-                    localStorage.removeItem(`user_${userId}_progress`);
-                    // Note: We keep the session and user account data
-                    alert('Cache cleared. Please refresh the page.');
-                    window.location.reload();
-                }
-            });
-            
-            // Sign out all sessions
-            document.getElementById('signout-all-btn').addEventListener('click', () => {
-                if (confirm('This will sign you out of all sessions. Continue?')) {
-                    window.AuthManager.logout();
-                }
-            });
-        }
-        
-        function switchSection(section) {
-            const sections = document.querySelectorAll('.settings-section');
-            sections.forEach(sec => sec.classList.add('hidden'));
-            
-            const targetSection = document.getElementById(`${section}-section`);
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
             }
         }
+
+        function savePassword() {
+            const cur = document.getElementById('current-password').value;
+            const neu = document.getElementById('new-password').value;
+            const conf = document.getElementById('confirm-password').value;
+            const msg = document.getElementById('password-message');
+            if (!cur || !neu || !conf) { msg.textContent = 'Fill all fields.'; msg.className = 'password-message error show'; return; }
+            if (neu.length < 8) { msg.textContent = 'Password must be at least 8 characters.'; msg.className = 'password-message error show'; return; }
+            if (neu !== conf) { msg.textContent = 'Passwords do not match.'; msg.className = 'password-message error show'; return; }
+            try {
+                window.AuthManager.changePassword(cur, neu);
+                msg.textContent = 'Password changed.';
+                msg.className = 'password-message success show';
+                setTimeout(() => { document.getElementById('password-form').classList.add('hidden'); msg.classList.remove('show'); document.getElementById('current-password').value = ''; document.getElementById('new-password').value = ''; document.getElementById('confirm-password').value = ''; }, 2000);
+            } catch (e) {
+                msg.textContent = e.message || 'Failed.';
+                msg.className = 'password-message error show';
+            }
+        }
+
+        function switchSection(section) {
+            document.querySelectorAll('.settings-section').forEach(s => s.classList.add('hidden'));
+            const t = document.getElementById(section + '-section');
+            if (t) t.classList.remove('hidden');
+        }
     </script>
+    <script src="museum-reveal.js" defer></script>
 </body>
 </html>

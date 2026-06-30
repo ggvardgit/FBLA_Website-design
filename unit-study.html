@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Study APUSH period with interactive timelines, practice questions, and primary sources">
     <title>Unit Study | APUSH Learning Hub</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=museum1">
 </head>
-<body>
+<body class="museum-site">
     <nav class="navbar" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <a href="index.html" class="logo" aria-label="APUSH Learning Hub Home">
-                <span class="logo-text">APUSH Hub</span>
+            <a href="index.html" class="logo" aria-label="APUSH HUB Home">
+                <span class="logo-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19V5l8-3 8 3v14"/><path d="M8 10h8M8 14h5"/></svg></span>
+                <span class="logo-text">APUSH HUB</span>
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span>
@@ -21,31 +22,29 @@
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link">Home</a></li>
                 <li><a href="units.html" class="nav-link">Units</a></li>
-                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
-                <li><a href="schedule.html" class="nav-link">Live Study</a></li>
                 <li><a href="resources.html" class="nav-link">Resources</a></li>
-                <li><a href="api-config.html" class="nav-link">AI Settings</a></li>
+                <li><a href="schedule.html" class="nav-link">Schedule</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
             </ul>
             <div class="nav-controls">
-                <button class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-                    <span class="theme-icon">🌙</span>
-                </button>
-                <button class="motion-toggle" aria-label="Toggle reduced motion" title="Reduce motion">
-                    <span class="motion-icon">⚙️</span>
+                <div data-theme-toggler-root class="theme-toggler-root" hidden aria-hidden="true"></div>
+                <button type="button" class="settings-gear-btn" aria-label="Open settings" title="Settings">
+                    <span>⚙️</span>
                 </button>
             </div>
         </div>
     </nav>
 
     <main class="main-content">
-        <section class="unit-study-header" aria-labelledby="unit-heading">
+        <section class="unit-study-header page-hero" aria-labelledby="unit-heading">
             <div class="container">
                 <nav class="breadcrumb" aria-label="Breadcrumb">
-                    <a href="units.html">Units</a>
+                    <a href="units.html">Explore the Periods</a>
                     <span class="breadcrumb-separator">/</span>
                     <span id="current-period-name">Period</span>
                 </nav>
-                <h1 id="unit-heading" class="page-title">Period <span id="period-number">2</span></h1>
+                <span class="section-label">Exhibit Guide</span>
+                <h1 id="unit-heading" class="page-title display-heading">Period <span id="period-number">2</span></h1>
                 <p class="page-subtitle" id="period-dates">1607-1754</p>
                 <div class="unit-progress">
                     <div class="unit-progress-bar">
@@ -111,9 +110,7 @@
                     <div class="tab-panel" id="practice-panel" role="tabpanel" aria-labelledby="practice-tab">
                         <div class="practice-container">
                             <div class="practice-type-selector">
-                                <button class="practice-type-btn active" data-type="saq">SAQ</button>
-                                <button class="practice-type-btn" data-type="dbq">DBQ</button>
-                                <button class="practice-type-btn" data-type="leq">LEQ</button>
+                                <button class="practice-type-btn active" data-type="mcq">MCQ</button>
                             </div>
                             <div class="practice-content" id="practice-content">
                                 <!-- Practice questions will be dynamically generated -->
@@ -144,14 +141,18 @@
 
     <footer class="footer" role="contentinfo">
         <div class="container">
-            <p>&copy; 2024 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
+            <p>&copy; 2026 APUSH Learning Hub. Designed for AP U.S. History exam preparation.</p>
         </div>
     </footer>
 
     <script src="apush-data.js"></script>
-    <script src="gemini-api.js"></script>
+    <script src="openai-api.js"></script>
     <script src="user-session.js"></script>
+    <script src="auth-guard.js"></script>
     <script src="script.js"></script>
+    <script src="theme-toggler.js"></script>
+    <script src="settings-modal.js"></script>
+    <script src="museum-reveal.js" defer></script>
     <script src="unit-study.js"></script>
 </body>
 </html>

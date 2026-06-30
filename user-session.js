@@ -13,8 +13,29 @@ const AuthManager = {
         
         this.loadUsers();
         this.restoreSession();
-        this.applyUserSettings();
+        // If no local session but Supabase configured, try restoring from Supabase
+        if (!this.currentUser && window.SupabaseAuth && window.SupabaseAuth.isConfigured()) {
+            this._tryRestoreSupabaseSession();
+        } else {
+            this.applyUserSettings();
+        }
         this._initialized = true;
+    },
+
+    async _tryRestoreSupabaseSession() {
+        try {
+            const session = await window.SupabaseAuth.getSession();
+            if (session && session.user && session.user.email_confirmed_at) {
+                await window.SupabaseAuth.syncSessionToAuthManager(session.user);
+                this.applyUserSettings();
+                window.dispatchEvent(new CustomEvent('apush:session-restored'));
+            } else {
+                this.applyUserSettings();
+            }
+        } catch (e) {
+            console.warn('Supabase session restore:', e);
+            this.applyUserSettings();
+        }
     },
     
     // Generate unique user ID
@@ -106,6 +127,8 @@ const AuthManager = {
         
         // Load user progress (creates default if none exists)
         this.loadUserProgress();
+
+        window.dispatchEvent(new CustomEvent('apush:login'));
     },
     
     // Restore session from localStorage
@@ -118,6 +141,7 @@ const AuthManager = {
                 this.applyUserSettings();
                 // Restore user progress
                 this.loadUserProgress();
+                window.dispatchEvent(new CustomEvent('apush:login'));
                 return true;
             }
         } catch (e) {
@@ -128,20 +152,33 @@ const AuthManager = {
     },
     
     // Logout
-    logout() {
-        // Clear session
+    async logout() {
+        try {
+            if (window.SupabaseAuth && window.SupabaseAuth.isConfigured()) {
+                await window.SupabaseAuth.signOut();
+            }
+        } catch (e) {
+            console.warn('Supabase signOut:', e);
+        }
+
         localStorage.removeItem('apush_session');
         this.currentUser = null;
-        
-        // Reset to default settings
         this.resetToDefaults();
-        
-        // Clear in-memory user data
         this.clearUserData();
-        
-        // Redirect to login if not already there
-        if (!window.location.pathname.includes('login.html')) {
-            window.location.href = 'login.html';
+
+        try {
+            document.documentElement.classList.remove('apush-authenticated-boot');
+        } catch (_) { /* ignore */ }
+
+        window.dispatchEvent(new CustomEvent('apush:logout'));
+
+        const file = (window.location.pathname || '').split('/').pop() || '';
+        const onHome = file === '' || file === 'index.html';
+
+        if (onHome) {
+            window.location.reload();
+        } else {
+            window.location.href = 'index.html';
         }
     },
     
@@ -254,6 +291,7 @@ const AuthManager = {
             reducedMotion: false,
             fontSize: 'medium',
             highContrast: false,
+            primaryHue: 217,
             saveHistory: true,
             personalizedRecommendations: true,
             lastLogin: new Date().toISOString()
@@ -291,6 +329,9 @@ const AuthManager = {
         try {
             const settingsKey = this.getSettingsKey(userId);
             localStorage.setItem(settingsKey, JSON.stringify(settings));
+            if (window.SupabasePersistence && window.SupabasePersistence.isReady()) {
+                window.SupabasePersistence.pushSettings(userId, settings);
+            }
         } catch (e) {
             console.error('Failed to save user settings:', e);
         }
@@ -353,6 +394,11 @@ const AuthManager = {
         } else {
             document.documentElement.removeAttribute('data-high-contrast');
         }
+
+        // Apply primary hue (theme color)
+        const hue = settings.primaryHue !== undefined ? settings.primaryHue : 217;
+        document.documentElement.style.setProperty('--primary-color', `hsl(${hue}, 70%, 50%)`);
+        document.documentElement.style.setProperty('--primary-hover', `hsl(${hue}, 70%, 40%)`);
     },
     
     // Check if user is authenticated
@@ -368,10 +414,52 @@ const AuthManager = {
     // Require authentication (redirect to login if not authenticated)
     requireAuth() {
         if (!this.isAuthenticated()) {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
             return false;
         }
         return true;
+    },
+
+    // Permanently delete the current account and all saved data on this device
+    async deleteAccount() {
+        if (!this.currentUser) {
+            throw new Error('No user logged in.');
+        }
+
+        const userId = this.currentUser.id;
+        const emailNorm = (this.currentUser.email || '').toLowerCase().trim();
+
+        if (window.SupabaseAuth && window.SupabaseAuth.isConfigured()) {
+            try {
+                await window.SupabaseAuth.signOut();
+            } catch (e) {
+                console.warn('Supabase signOut during account deletion:', e);
+            }
+        }
+
+        if (emailNorm && this.users.has(emailNorm)) {
+            this.users.delete(emailNorm);
+            this.saveUsers();
+        }
+
+        localStorage.removeItem(`user_${userId}_progress`);
+        localStorage.removeItem(`user_${userId}_settings`);
+        localStorage.removeItem('apush_session');
+
+        try {
+            sessionStorage.removeItem('apush_assistant_history');
+        } catch (_) { /* ignore */ }
+
+        this.currentUser = null;
+        this.resetToDefaults();
+        this.clearUserData();
+
+        try {
+            document.documentElement.classList.remove('apush-authenticated-boot');
+        } catch (_) { /* ignore */ }
+
+        window.dispatchEvent(new CustomEvent('apush:logout'));
+        window.location.reload();
     },
     
     // Change password
@@ -430,41 +518,7 @@ if (typeof window !== 'undefined') {
     });
 }
 
-// Function to update navigation (called from script.js)
+// Function to update navigation (settings now in gear modal; optional login link can be added if needed)
 function updateNavigation() {
-    const isAuthenticated = AuthManager.isAuthenticated();
-    const navMenus = document.querySelectorAll('.nav-menu');
-    const navControls = document.querySelectorAll('.nav-controls');
-    
-    navMenus.forEach(menu => {
-        // Remove existing auth links
-        const existingAuthLinks = menu.querySelectorAll('.nav-auth-link');
-        existingAuthLinks.forEach(link => link.remove());
-        
-        if (isAuthenticated) {
-            // Add Settings link
-            const settingsLi = document.createElement('li');
-            settingsLi.innerHTML = '<a href="settings.html" class="nav-link nav-auth-link">Settings</a>';
-            menu.appendChild(settingsLi);
-            
-            // Add Logout link
-            const logoutLi = document.createElement('li');
-            logoutLi.innerHTML = '<a href="#" class="nav-link nav-auth-link" id="logout-link">Logout</a>';
-            menu.appendChild(logoutLi);
-            
-            // Add logout handler
-            const logoutLink = document.getElementById('logout-link');
-            if (logoutLink) {
-                logoutLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    AuthManager.logout();
-                });
-            }
-        } else {
-            // Add Login link
-            const loginLi = document.createElement('li');
-            loginLi.innerHTML = '<a href="login.html" class="nav-link nav-auth-link">Login</a>';
-            menu.appendChild(loginLi);
-        }
-    });
+    // Settings and Account are now in the unified settings modal (gear icon)
 }
